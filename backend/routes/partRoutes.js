@@ -3,7 +3,8 @@ const router = express.Router();
 const {
   addPart,
   getAllParts,
-  lookupPart,
+  lookupPartById,
+  lookupPartByName,
   updatePart,
   deletePart,
 } = require("../controllers/partController");
@@ -13,9 +14,14 @@ router.route("/")
     .post(addPart)
     .get(getAllParts);
 
-// Route to get, update, and delete a specific part by ID
+// Route to get a part by ID
+router.get("/id/:id", lookupPartById);
+
+// Route to get a part by Name
+router.get("/name/:name", lookupPartByName);
+
+// Route to update and delete a specific part by ID
 router.route("/:id")
-    .get(lookupPart)
     .put(updatePart)
     .delete(deletePart);
 
