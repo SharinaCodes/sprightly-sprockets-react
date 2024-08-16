@@ -1,8 +1,8 @@
 const express = require("express");
-const colors = require('colors');
+const colors = require("colors");
 const dotenv = require("dotenv").config();
 const { errorHandler } = require("./middleware/errorMiddlware");
-const connectDB = require("./config/db")
+const connectDB = require("./config/db");
 const PORT = process.env.PORT || 5000;
 
 //connect to database
@@ -14,7 +14,8 @@ app.use(express.urlencoded({ extended: false }));
 
 //Routes
 app.use("/api/users", require("./routes/userRoutes"));
-app.use('/api/parts', require('./routes/partRoutes'))
+app.use("/api/parts", require("./routes/partRoutes"));
+app.use("/api/products", require("./routes/productRoutes"));
 
 //error handler
 app.use(errorHandler);
