@@ -43,6 +43,10 @@ const getAllParts = asyncHandler(async (req, res) => {
 const lookupPartByName = asyncHandler(async (req, res) => {
   const { name } = req.params;
 
+  if(!name || name.trim() === '') {
+    return await getAllParts(req, res);
+  }
+
   try {
     // Use a regular expression for partial, case-insensitive matching
     const parts = await Part.find({ name: new RegExp(name, "i") });

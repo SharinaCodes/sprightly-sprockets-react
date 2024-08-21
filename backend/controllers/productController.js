@@ -65,6 +65,10 @@ const lookupProductById = asyncHandler(async (req, res) => {
 const lookupProductByName = asyncHandler(async (req, res) => {
   const { name } = req.params;
 
+  if (!name  || name.triom() === '') {
+    return await getAllProducts(req, res);
+  }
+
   try {
     // Use a regular expression for partial, case-insensitive matching
     const products = await Product.find({ name: new RegExp(name, "i") }).populate('associatedParts.partId');
