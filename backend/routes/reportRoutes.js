@@ -5,6 +5,10 @@ const {
   getProductsTimestampReport,
   getUsersTimestampReport
 } = require("../controllers/reportController");
+const {protect} = require('../middleware/authMiddleware');
+
+//protect all routes
+router.use(protect);
 
 // Route to get the Low Stock Report
 router.get("/parts-timestamp", getPartsTimestampReport);

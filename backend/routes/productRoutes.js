@@ -8,6 +8,10 @@ const {
   updateProduct,
   deleteProduct,
 } = require("../controllers/productController");
+const { protect } = require("../middleware/authMiddleware");
+
+//protect routes
+router.use(protect);
 
 router.route("/").post(addProduct).get(getAllProducts);
 

@@ -8,17 +8,16 @@ const {
   updatePart,
   deletePart,
 } = require("../controllers/partController");
+const { protect } = require("../middleware/authMiddleware");
 
-// Route to add a new part and get all parts
-router.route("/").post(addPart).get(getAllParts);
+// Route to get all parts (Not protected)
+router.get("/", getAllParts);
 
-// Route to get a part by ID
-router.get("/id/:id", lookupPartById);
-
-// Route to get a part by Name
-router.get("/name/:name", lookupPartByName);
-
-// Route to update and delete a specific part by ID
-router.route("/:id").put(updatePart).delete(deletePart);
+// Protected routes
+router.post("/", protect, addPart);
+router.get("/id/:id", protect, lookupPartById);
+router.get("/name/:name", protect, lookupPartByName);
+router.put("/:id", protect, updatePart);
+router.delete("/:id", protect, deletePart);
 
 module.exports = router;

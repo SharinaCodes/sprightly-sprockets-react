@@ -10,50 +10,27 @@ const protect = asyncHandler(async (req, res, next) => {
     req.headers.authorization.startsWith("Bearer")
   ) {
     try {
-      //Get token from header
+      // Extract token
       token = req.headers.authorization.split(" ")[1];
 
-      //verify
+      // Validate token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      //extract user info
-      req.user = await User.findById(decoded.id).select("-password");
-
-      //check for user
-      if (!req.user) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("User not found");
-        }
-
-        res.status(401);
-        throw new Error("Not authorized");
-      }
+      // Extract user
+      req.user = await User.findById(decoded.userId).select("-password");
 
       next();
     } catch (error) {
       if (process.env.NODE_ENV === "development") {
-        if (error.name === "JsonWebTokenError") {
-          console.error("Invalid token");
-        } else if (error.name === "TokenExpiredError") {
-          console.error("Expired token");
-        } else {
-          console.error("Authorization error:", error.message);
-        }
+        console.error(error);
       }
-
       res.status(401);
-      throw new Error("Not authorized, token failed");
+      throw new Error("Not authorized");
     }
-  }
-
-  if (!token) {
-    if (process.env.NODE_ENV === "development") {
-      console.error("No token");
-    }
-
+  } else {
     res.status(401);
-    throw new Error("Not authorized");
+    throw new Error("Not authorized, no token");
   }
 });
 
-module.exports = {protect}
+module.exports = { protect };
