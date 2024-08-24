@@ -1,43 +1,50 @@
 const asyncHandler = require("express-async-handler");
 const Part = require("../models/partModel");
 const Product = require("../models/productModel");
+const User = require ('../models/userModel');
 
-// @desc    Get Low Stock Report
-// @route   GET /api/reports/low-stock
+// @desc    Get Parts Creation/Modification Report
+// @route   GET /api/reports/parts-timestamps
 // @access  Private
-const getLowStockReport = asyncHandler(async (req, res) => {
-    // Define "low stock" as stock that is less than or equal to min * 1.1 (10% above min)
-    const lowStockThreshold = { $expr: { $lte: ["$stock", { $multiply: ["$min", 1.1] }] } };
-  
-    const lowStockParts = await Part.find(lowStockThreshold);
+const getPartsTimestampReport = asyncHandler(async (req, res) => {
+  const parts = await Part.find().select('name createdAt updatedAt');
 
-    const lowStockProducts = await Product.find(lowStockThreshold);
-  
-    res.status(200).json({lowStockParts, lowStockProducts});
+  res.status(200).json({
+    title: "Parts Creation/Modification Report",
+    date: new Date(),
+    parts,
   });
-  
-
-// @desc    Get Parts by Type Report
-// @route   GET /api/reports/parts-by-type
-// @access  Private
-const getPartsByTypeReport = asyncHandler(async (req, res) => {
-  const inHouseParts = await Part.find({ type: "InHouse" });
-  const outsourcedParts = await Part.find({ type: "Outsourced" });
-
-  res.status(200).json({ inHouseParts, outsourcedParts });
 });
 
-// @desc    Get Product Parts Association Report
-// @route   GET /api/reports/product-parts-association
-// @access  Private
-const getProductPartsAssociationReport = asyncHandler(async (req, res) => {
-  const products = await Product.find().populate('associatedParts.partId');
 
-  res.status(200).json(products);
+// @desc    Get Products Creation/Modification Report
+// @route   GET /api/reports/products-timestamps
+// @access  Private
+const getProductsTimestampReport = asyncHandler(async (req, res) => {
+  const products = await Product.find().select('name createdAt updatedAt');
+
+  res.status(200).json({
+    title: "Products Creation/Modification Report",
+    date: new Date(),
+    products,
+  });
+});  
+
+// @desc    Get Users Creation/Modification Report
+// @route   GET /api/reports/users-timestamps
+// @access  Private
+const getUsersTimestampReport = asyncHandler(async (req, res) => {
+  const users = await User.find().select('firstName lastName email createdAt updatedAt');
+
+  res.status(200).json({
+    title: "Users Creation/Modification Report",
+    date: new Date(),
+    users,
+  });
 });
 
 module.exports = {
-  getLowStockReport,
-  getPartsByTypeReport,
-  getProductPartsAssociationReport,
+  getPartsTimestampReport,
+  getProductsTimestampReport,
+  getUsersTimestampReport,
 };
