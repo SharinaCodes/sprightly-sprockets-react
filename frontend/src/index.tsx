@@ -5,6 +5,12 @@ import { store } from './app/store';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'jquery';
+import 'popper.js';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
+
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);
