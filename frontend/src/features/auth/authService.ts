@@ -1,28 +1,49 @@
 import axios from 'axios';
 
-const API_URL = '/api/auth/';
+const API_URL = 'http://localhost:5000/api/users/';
+
+// Define the interface for user registration data
+interface RegisterUserData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
+// Define the interface for user login data
+interface LoginUserData {
+  email: string;
+  password: string;
+}
 
 // Register user
-const register = async (userData: { firstName: string; lastName: string; email: string; password: string }) => {
-  const response = await axios.post(API_URL + 'register', userData);
+const register = async (userData: RegisterUserData) => {
+  const response = await axios.post(API_URL, userData);
+  if (response.data) {
+    // Save user data to local storage
+    localStorage.setItem('user', JSON.stringify(response.data));
+  }
   return response.data;
 };
 
 // Login user
-const login = async (userData: { email: string; password: string }) => {
+const login = async (userData: LoginUserData) => {
   const response = await axios.post(API_URL + 'login', userData);
+  if (response.data) {
+    // Save user data to local storage
+    localStorage.setItem('user', JSON.stringify(response.data));
+  }
   return response.data;
 };
 
-// Logout user
-const logout = () => {
-  localStorage.removeItem('user');
-};
+//Logout user
+const logout = () => localStorage.removeItem('user');
 
+// Export the auth service
 const authService = {
   register,
   login,
-  logout,
+  logout
 };
 
 export default authService;

@@ -1,5 +1,9 @@
-import {useState} from 'react';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { loginUser, reset } from '../features/auth/authSlice';
+import { RootState, AppDispatch } from '../app/store';
+import { useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -7,24 +11,46 @@ const Login: React.FC = () => {
     password: '',
   });
 
-  const {email, password} = formData;
+  const { email, password } = formData;
+
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state: RootState) => state.auth
+  );
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+
+    if (isSuccess && user) {
+      toast.success('Login successful');
+      navigate('/');
+    }
+
+    dispatch(reset());
+  }, [user, isError, isSuccess, message, dispatch]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
-      [e.target.name]: e.target.value
-    }))
-  }
+      [e.target.name]: e.target.value,
+    }));
+  };
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-  }
+
+    const userData = { email, password };
+    dispatch(loginUser(userData));
+  };
 
   return (
     <section className="container">
       <h1 className="heading">Login</h1>
       <p>Login to your account.</p>
-      <form onSubmit={onSubmit} className="form">        
+      <form onSubmit={onSubmit} className="form">
         <div className="form-group">
           <input
             type="email"
@@ -36,7 +62,7 @@ const Login: React.FC = () => {
             required
             className="form-control"
           />
-          </div>
+        </div>
         <div className="form-group">
           <input
             type="password"
@@ -48,7 +74,7 @@ const Login: React.FC = () => {
             required
             className="form-control"
           />
-        </div>       
+        </div>
         <button type="submit" className="btn btn-primary btn-block">Login</button>
       </form>
     </section>

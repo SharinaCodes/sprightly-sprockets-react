@@ -1,5 +1,9 @@
-import {useState} from 'react';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {useNavigate} from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { registerUser, reset } from '../features/auth/authSlice';
+import { RootState, AppDispatch } from '../app/store';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -10,24 +14,45 @@ const Register: React.FC = () => {
     password2: ''
   });
 
-  const {firstName, lastName, email, password, password2} = formData;
+  const { firstName, lastName, email, password, password2 } = formData;
+
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state: RootState) => state.auth
+  );
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+
+    if (isSuccess && user) {
+      toast.success('Registration successful');
+      navigate('/');
+      
+    }
+
+    dispatch(reset());
+  }, [user, isError, isSuccess, message, dispatch, navigate]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prevState => ({
       ...prevState,
       [e.target.name]: e.target.value
-    }))
-  }
+    }));
+  };
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if(password !== password2) {
+    if (password !== password2) {
       toast.error("Passwords do not match");
     } else {
-      //TODO: submit form data
+      const userData = { firstName, lastName, email, password };
+      dispatch(registerUser(userData));
     }
-  }
+  };
 
   return (
     <section className="container">
@@ -36,25 +61,25 @@ const Register: React.FC = () => {
       <form onSubmit={onSubmit} className="form">
         <div className="form-group">
           <input 
-          type="text" 
-          placeholder="Enter your first name"
-          name="firstName"
-          id="firstName"
-          value={firstName}
-          onChange={onChange}
-          className="form-control"
-          required />
+            type="text" 
+            placeholder="Enter your first name"
+            name="firstName"
+            id="firstName"
+            value={firstName}
+            onChange={onChange}
+            className="form-control"
+            required />
         </div>
         <div className="form-group">
           <input 
-          type="text" 
-          placeholder="Enter your last name"
-          name="lastName"
-          id="lastName"
-          value={lastName}
-          onChange={onChange}
-          className="form-control"
-          required />
+            type="text" 
+            placeholder="Enter your last name"
+            name="lastName"
+            id="lastName"
+            value={lastName}
+            onChange={onChange}
+            className="form-control"
+            required />
         </div>
         <div className="form-group">
           <input
@@ -67,7 +92,7 @@ const Register: React.FC = () => {
             required
             className="form-control"
           />
-          </div>
+        </div>
         <div className="form-group">
           <input
             type="password"
