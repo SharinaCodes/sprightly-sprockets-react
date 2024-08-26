@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { registerUser, reset } from '../features/auth/authSlice';
+import Spinner from '../components/Spinner';
 import { RootState, AppDispatch } from '../app/store';
 
 const Register: React.FC = () => {
@@ -53,6 +54,10 @@ const Register: React.FC = () => {
       dispatch(registerUser(userData));
     }
   };
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <section className="container">

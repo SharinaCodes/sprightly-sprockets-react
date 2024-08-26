@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { loginUser, reset } from '../features/auth/authSlice';
 import { RootState, AppDispatch } from '../app/store';
 import { useNavigate } from 'react-router-dom';
+import Spinner from '../components/Spinner';
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -30,7 +31,7 @@ const Login: React.FC = () => {
     }
 
     dispatch(reset());
-  }, [user, isError, isSuccess, message, dispatch]);
+  }, [user, isError, isSuccess, message, dispatch, navigate]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
@@ -45,6 +46,10 @@ const Login: React.FC = () => {
     const userData = { email, password };
     dispatch(loginUser(userData));
   };
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <section className="container">
