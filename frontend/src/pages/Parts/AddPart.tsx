@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Part from '../Parts/Part';
+import { ObjectId } from 'bson';
+import Part from '../../features/inventory/Part';
 
 const AddPart: React.FC = () => {
   // Initial form state with all fields
@@ -32,9 +33,29 @@ const AddPart: React.FC = () => {
   // Handle form submission
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Logic to add the part would go here
-    console.log("Part added", formData);
-    navigate("/");
+
+    try {
+      // Create a new Part instance
+      const newPart = new Part(
+        new ObjectId(),
+        formData.name,
+        parseFloat(formData.price),
+        parseInt(formData.stock),
+        parseInt(formData.min),
+        parseInt(formData.max),
+        formData.type,
+        formData.type === "InHouse" ? formData.machineId : null,
+        formData.type === "Outsourced" ? formData.companyName : null
+      );
+
+      // Logic to add the part would go here (e.g., dispatching to Redux, making an API call)
+      console.log("Part added", newPart);
+
+      navigate("/");
+    } catch (error) {
+      console.error("Failed to add part:", error);
+      // Handle validation errors
+    }
   };
 
   return (

@@ -29,9 +29,17 @@ const Header: React.FC = () => {
             </Link>
           </li>
           {user ? (
+            <>
+            <li className="nav-item">
+                <Link className="nav-link" to="/products">
+                  Products
+                </Link>
+              </li>
             <li className="nav-item" onClick={onLogout} style={{ cursor: 'pointer' }}>
               <span className="nav-link">Logout</span>
             </li>
+            
+            </>
           ) : (
             <>
               <li className="nav-item">

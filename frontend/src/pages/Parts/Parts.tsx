@@ -76,7 +76,7 @@ const Parts: React.FC = () => {
     part.companyName
   ));
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: ObjectId) => {
     console.log("Delete part with id:", id);
     // Implement delete functionality
   };

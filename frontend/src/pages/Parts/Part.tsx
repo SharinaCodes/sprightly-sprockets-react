@@ -2,10 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FaRegTrashAlt, FaRegEdit } from "react-icons/fa";
 import Part from '../../features/inventory/Part';
+import { ObjectId } from "bson";
 
 interface PartComponentProps {
   part: Part;  // Using the Part class directly
-  handleDelete: (id: string) => void;
+  handleDelete: (id: ObjectId) => void;
 }
 
 const PartComponent: React.FC<PartComponentProps> = ({ part, handleDelete }) => (
@@ -22,13 +23,13 @@ const PartComponent: React.FC<PartComponentProps> = ({ part, handleDelete }) => 
     </td>
     <td className="text-center">
       <div className="d-flex justify-content-center">
-        <Link to={`/edit-part/${part.getName()}`} className="btn btn-link p-0 mr-2">
+        <Link to={`/edit-part/${part.getId()}`} className="btn btn-link p-0 mr-2">
           <FaRegEdit />
         </Link>
         <button
           type="button"
           className="btn btn-link p-0"
-          onClick={() => handleDelete(part.getName())}
+          onClick={() => handleDelete(part.getId())}
         >
           <FaRegTrashAlt />
         </button>
