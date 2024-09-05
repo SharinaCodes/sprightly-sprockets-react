@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FaPlusSquare } from "react-icons/fa";
 import { ObjectId } from "bson"; // Import ObjectId from mongodb
 import PartComponent from "./Part";
-import Part from '../../features/inventory/Part';
+import Part from "../../features/inventory/Part";
 
 const partData = [
   {
@@ -64,17 +64,20 @@ const partData = [
 ];
 
 const Parts: React.FC = () => {
-  const parts = partData.map(part => new Part(
-    new ObjectId(part._id), // Convert the string _id to an ObjectId
-    part.name,
-    part.price,
-    part.stock,
-    part.min,
-    part.max,
-    part.type,
-    part.machineId,
-    part.companyName
-  ));
+  const parts = partData.map(
+    (part) =>
+      new Part(
+        new ObjectId(part._id), // Convert the string _id to an ObjectId
+        part.name,
+        part.price,
+        part.stock,
+        part.min,
+        part.max,
+        part.type,
+        part.machineId,
+        part.companyName
+      )
+  );
 
   const handleDelete = (id: ObjectId) => {
     console.log("Delete part with id:", id);
@@ -92,24 +95,30 @@ const Parts: React.FC = () => {
             </Link>
           </button>
           <h2 className="mb-4">Parts</h2>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Min</th>
-                <th>Max</th>
-                <th>Source</th>
-                <th className="text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {parts.map((part) => (
-                <PartComponent key={part.getId().toString()} part={part} handleDelete={handleDelete} />
-              ))}
-            </tbody>
-          </table>
+          <div className="table-responsive">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Min</th>
+                  <th>Max</th>
+                  <th>Source</th>
+                  <th className="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {parts.map((part) => (
+                  <PartComponent
+                    key={part.getId().toString()}
+                    part={part}
+                    handleDelete={handleDelete}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

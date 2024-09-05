@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FaPlusSquare } from "react-icons/fa";
 import { ObjectId } from "bson";
 import ProductComponent from "./Product";
-import Product from '../../features/inventory/Product';
+import Product from "../../features/inventory/Product";
 
 const productData = [
   {
@@ -45,18 +45,21 @@ const productData = [
     stock: 15,
     min: 3,
     max: 30,
-  }
+  },
 ];
 
 const Products: React.FC = () => {
-  const products = productData.map(product => new Product(
-    new ObjectId(product.id), // Convert the string id to an ObjectId
-    product.name,
-    product.price,
-    product.stock,
-    product.min,
-    product.max,
-  ));
+  const products = productData.map(
+    (product) =>
+      new Product(
+        new ObjectId(product.id), // Convert the string id to an ObjectId
+        product.name,
+        product.price,
+        product.stock,
+        product.min,
+        product.max
+      )
+  );
 
   const handleDelete = (id: ObjectId) => {
     console.log("Delete product with id:", id);
@@ -74,23 +77,30 @@ const Products: React.FC = () => {
             </Link>
           </button>
           <h2 className="mb-4">Products</h2>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Min</th>
-                <th>Max</th>
-                <th className="text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((product) => (
-                <ProductComponent key={product.getId().toString()} product={product} handleDelete={handleDelete} />
-              ))}
-            </tbody>
-          </table>
+          {/* Wrapping table with table-responsive class */}
+          <div className="table-responsive">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Min</th>
+                  <th>Max</th>
+                  <th className="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.map((product) => (
+                  <ProductComponent
+                    key={product.getId().toString()}
+                    product={product}
+                    handleDelete={handleDelete}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
