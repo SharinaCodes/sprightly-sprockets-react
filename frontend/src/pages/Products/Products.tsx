@@ -77,6 +77,28 @@ const Products: React.FC = () => {
             </Link>
           </button>
           <h2 className="mb-4">Products</h2>
+          <nav className="navbar navbar-light bg-light">
+            <form className="form-inline w-100">
+              <div className="row w-100">
+                <div className="col-8 col-sm-10">
+                  <input
+                    className="form-control w-100"
+                    type="search"
+                    placeholder="Search"
+                    aria-label="Search"
+                  />
+                </div>
+                <div className="col-4 col-sm-2">
+                  <button
+                    className="btn btn-outline-primary w-100"
+                    type="submit"
+                  >
+                    Search
+                  </button>
+                </div>
+              </div>
+            </form>
+          </nav>
           {/* Wrapping table with table-responsive class */}
           <div className="table-responsive">
             <table className="table">

@@ -21,6 +21,10 @@ export default class InventoryItem {
     return this.id;
   }
 
+  setId(id: ObjectId) {
+    this.id = id;
+  }
+
   getName(): string {
     return this.name;
   }
