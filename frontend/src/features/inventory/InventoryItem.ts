@@ -1,15 +1,15 @@
-import { ObjectId } from "bson"; // Import ObjectId from the mongodb package
-
 export default class InventoryItem {
-  protected id: ObjectId; // Add the id field
+  protected id?: string;
   protected name: string;
   protected price: number;
   protected stock: number;
   protected min: number;
   protected max: number;
 
-  constructor(id: ObjectId, name: string, price: number, stock: number, min: number, max: number) {
-    this.id = id;
+  constructor(name: string, price: number, stock: number, min: number, max: number, id?: string) {
+    if (id) {
+      this.id = id;
+    }
     this.name = name;
     this.price = price;
     this.stock = stock;
@@ -17,11 +17,11 @@ export default class InventoryItem {
     this.max = max;
   }
 
-  getId(): ObjectId {
+  getId(): string | undefined {
     return this.id;
   }
 
-  setId(id: ObjectId) {
+  setId(id: string) {
     this.id = id;
   }
 

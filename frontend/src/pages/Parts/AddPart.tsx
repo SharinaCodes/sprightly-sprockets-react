@@ -1,11 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ObjectId } from 'bson';
-import Part from '../../features/inventory/Part';
+import { useSelector } from "react-redux";
+import { ObjectId } from "bson";
+import Part from "../../features/inventory/Part";
+import { RootState, AppDispatch } from "../../app/store";
+import { useDispatch } from "react-redux";
+import { createPart, reset } from '../../features/parts/partSlice';
+import { toast } from "react-toastify";
+
+// Define the interface for form state
+interface FormData {
+  name: string;
+  price: string;
+  stock: string;
+  min: string;
+  max: string;
+  type: "InHouse" | "Outsourced";
+  machineId: string;
+  companyName: string;
+}
+
+// Define the User interface to ensure that it has firstName and email
+interface User {
+  firstName: string;
+  email: string;
+}
 
 const AddPart: React.FC = () => {
-  // Initial form state with all fields
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     price: "",
     stock: "",
@@ -16,18 +38,53 @@ const AddPart: React.FC = () => {
     companyName: "",
   });
 
-  const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.auth.user) as User | null;
+  const { isSuccess, isError, message } = useSelector((state: RootState) => state.part);
 
-  // Go back to the previous page
-  const handleGoBack = () => {
-    navigate(-1); // Navigates back to the last visited page in history
-  };
+  const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prevData) => ({
+        ...prevData,
+        name: user.firstName,
+      }));
+    }
+  }, [user]);
+
+  // Monitor Redux state for success/error
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Part added successfully!");
+      dispatch(reset());  // Reset the state after success
+      navigate("/");  // Only navigate on success
+    }
+  
+    if (isError) {
+      toast.error(message || "Failed to add part.");
+      dispatch(reset());  // Reset the state after error
+    }
+  }, [isSuccess, isError, message, navigate, dispatch]);
+  
 
   // Handle input change
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Convert Part class instance to a plain object
+  const convertPartToPlainObject = (part: Part) => {
+    return {
+      name: part.getName(),
+      price: part.getPrice(),
+      stock: part.getStock(),
+      min: part.getMin(),
+      max: part.getMax(),
+      type: part.getType() as "InHouse" | "Outsourced", // Explicitly cast the type
+      machineId: part.getMachineId(),
+      companyName: part.getCompanyName(),
+    };
   };
 
   // Handle form submission
@@ -35,9 +92,8 @@ const AddPart: React.FC = () => {
     e.preventDefault();
 
     try {
-      // Create a new Part instance
+      // Create a new Part instance using your class
       const newPart = new Part(
-        new ObjectId(),
         formData.name,
         parseFloat(formData.price),
         parseInt(formData.stock),
@@ -48,13 +104,13 @@ const AddPart: React.FC = () => {
         formData.type === "Outsourced" ? formData.companyName : null
       );
 
-      // Logic to add the part would go here (e.g., dispatching to Redux, making an API call)
-      console.log("Part added", newPart);
+      // Convert Part instance to plain object for dispatching
+      const partObject = convertPartToPlainObject(newPart);
 
-      navigate("/");
+      // Dispatch the part object to Redux
+      dispatch(createPart(partObject));
     } catch (error) {
       console.error("Failed to add part:", error);
-      // Handle validation errors
     }
   };
 
@@ -63,7 +119,7 @@ const AddPart: React.FC = () => {
       <div className="container">
         <div className="row">
           <div className="col-md-8 m-auto">
-            <button className="btn btn-light" onClick={handleGoBack}>
+            <button className="btn btn-light" onClick={() => navigate(-1)}>
               Go Back
             </button>
 

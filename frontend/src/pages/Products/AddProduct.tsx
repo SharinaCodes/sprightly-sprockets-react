@@ -70,7 +70,6 @@ const AddProduct: React.FC = () => {
     const selectedPart = existingPartsData.find((part) => part._id === selectedPartId);
     if (selectedPart) {
       const part = new Part(
-        new ObjectId(selectedPart._id),
         selectedPart.name,
         selectedPart.price,
         selectedPart.stock,
@@ -95,7 +94,6 @@ const AddProduct: React.FC = () => {
 
     try {
       const newProduct = new Product(
-        new ObjectId(),
         formData.name,
         parseFloat(formData.price),
         parseInt(formData.stock),

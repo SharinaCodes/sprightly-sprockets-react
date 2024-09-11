@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FaPlusSquare } from "react-icons/fa";
-import { ObjectId } from "bson"; // Import ObjectId from mongodb
 import PartComponent from "./Part";
 import Part from "../../features/inventory/Part";
 
@@ -67,7 +66,6 @@ const Parts: React.FC = () => {
   const parts = partData.map(
     (part) =>
       new Part(
-        new ObjectId(part._id), // Convert the string _id to an ObjectId
         part.name,
         part.price,
         part.stock,
@@ -79,7 +77,7 @@ const Parts: React.FC = () => {
       )
   );
 
-  const handleDelete = (id: ObjectId) => {
+  const handleDelete = (id: string | undefined) => {
     console.log("Delete part with id:", id);
     // Implement delete functionality
   };
@@ -134,7 +132,7 @@ const Parts: React.FC = () => {
               <tbody>
                 {parts.map((part) => (
                   <PartComponent
-                    key={part.getId().toString()}
+                    key={part.getId()}
                     part={part}
                     handleDelete={handleDelete}
                   />

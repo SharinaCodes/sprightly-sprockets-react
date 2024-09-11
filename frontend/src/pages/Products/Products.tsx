@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FaPlusSquare } from "react-icons/fa";
-import { ObjectId } from "bson";
 import ProductComponent from "./Product";
 import Product from "../../features/inventory/Product";
 
@@ -52,7 +51,6 @@ const Products: React.FC = () => {
   const products = productData.map(
     (product) =>
       new Product(
-        new ObjectId(product.id), // Convert the string id to an ObjectId
         product.name,
         product.price,
         product.stock,
@@ -61,7 +59,7 @@ const Products: React.FC = () => {
       )
   );
 
-  const handleDelete = (id: ObjectId) => {
+  const handleDelete = (id: string) => {
     console.log("Delete product with id:", id);
     // Implement delete functionality
   };
@@ -115,7 +113,7 @@ const Products: React.FC = () => {
               <tbody>
                 {products.map((product) => (
                   <ProductComponent
-                    key={product.getId().toString()}
+                    key={product.getId()}
                     product={product}
                     handleDelete={handleDelete}
                   />

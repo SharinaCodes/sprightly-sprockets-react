@@ -7,7 +7,6 @@ export default class Part extends InventoryItem {
   private companyName?: string | null;
 
   constructor(
-    id: ObjectId,
     name: string,
     price: number,
     stock: number,
@@ -17,7 +16,7 @@ export default class Part extends InventoryItem {
     machineId?: string | null,
     companyName?: string | null
   ) {
-    super(id, name, price, stock, min, max);
+    super(name, price, stock, min, max);
     this.type = type;
     this.machineId = machineId;
     this.companyName = companyName;
@@ -58,3 +57,17 @@ export default class Part extends InventoryItem {
     return this.name.toLowerCase() === criteria.toLowerCase() ? this : null;
   }
 }
+
+// Part.ts
+export interface PartInterface {
+  id?: string;
+  name: string;
+  price: number;
+  stock: number;
+  min: number;
+  max: number;
+  type: 'InHouse' | 'Outsourced';
+  machineId?: string | null;
+  companyName?: string | null;
+}
+

@@ -6,7 +6,6 @@ export default class Product extends InventoryItem {
   private associatedParts: Part[];
 
   constructor(
-    id: ObjectId,
     name: string,
     price: number,
     stock: number,
@@ -14,7 +13,7 @@ export default class Product extends InventoryItem {
     max: number,
     associatedParts: Part[] = []
   ) {
-    super(id, name, price, stock, min, max);
+    super(name, price, stock, min, max);
     this.associatedParts = associatedParts;
   }
 
