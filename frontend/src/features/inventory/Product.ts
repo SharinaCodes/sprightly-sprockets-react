@@ -1,6 +1,5 @@
-import InventoryItem from './InventoryItem';
-import Part from './Part';
-import {ObjectId} from 'bson';
+import InventoryItem from "./InventoryItem";
+import Part from "./Part";
 
 export default class Product extends InventoryItem {
   private associatedParts: Part[];
@@ -31,9 +30,19 @@ export default class Product extends InventoryItem {
 
   // Polymorphic method override
   findItem(criteria: string): Product | null {
-    const foundPart = this.associatedParts.find(part =>
-      part.getName().toLowerCase() === criteria.toLowerCase()
+    const foundPart = this.associatedParts.find(
+      (part) => part.getName().toLowerCase() === criteria.toLowerCase()
     );
     return foundPart ? this : null;
   }
+}
+
+export interface ProductInterface {
+  id?: string;
+  name: string;
+  price: number;
+  stock: number;
+  min: number;
+  max: number;
+  associatedParts: Part[];
 }

@@ -1,13 +1,13 @@
 // partSlice.ts
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import partService from './partService';
-import { RootState } from '../../app/store'; // Make sure this points to the correct location
-import { PartInterface } from '../../features/inventory/Part'; // Import the correct Part type
+import productService from './productService';
+import { RootState } from '../../app/store';
+import { ProductInterface } from '../inventory/Product';
 
 // Define the state interface for parts
-interface PartState {
-  parts: PartInterface[];
+interface ProductState {
+  products: ProductInterface[];
   isLoading: boolean;
   isError: boolean;
   isSuccess: boolean;
@@ -15,8 +15,8 @@ interface PartState {
 }
 
 // Initial state
-const initialState: PartState = {
-  parts: [],
+const initialState: ProductState = {
+  products: [],
   isLoading: false,
   isError: false,
   isSuccess: false,
@@ -24,12 +24,12 @@ const initialState: PartState = {
 };
 
 // Async thunk for creating a part
-export const createPart = createAsyncThunk(
-  'parts/create',
-  async (partData: PartInterface, thunkAPI) => {
+export const createProduct = createAsyncThunk(
+  'products/create',
+  async (productData: ProductInterface, thunkAPI) => {
     try {
       const token = (thunkAPI.getState() as RootState).auth.user?.token;
-      return await partService.createPart(partData, token!);  // Ensure token is non-null
+      return await productService.createProduct(productData, token!);  // Ensure token is non-null
     } catch (error: any) {
       const message =
         (error.response && error.response.data && error.response.data.message) ||
@@ -40,9 +40,9 @@ export const createPart = createAsyncThunk(
   }
 );
 
-// Part slice
-const partSlice = createSlice({
-  name: 'parts',
+// Product slice
+const productSlice = createSlice({
+  name: 'products',
   initialState,
   reducers: {
     reset: (state) => {
@@ -54,15 +54,15 @@ const partSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(createPart.pending, (state) => {
+      .addCase(createProduct.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(createPart.fulfilled, (state, action) => {
+      .addCase(createProduct.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.parts.push(action.payload as PartInterface); 
+        state.products.push(action.payload as ProductInterface); // Add the newly created part to the list
       })
-      .addCase(createPart.rejected, (state, action) => {
+      .addCase(createProduct.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload as string;
@@ -70,5 +70,5 @@ const partSlice = createSlice({
   },
 });
 
-export const { reset } = partSlice.actions;
-export default partSlice.reducer;
+export const { reset } = productSlice.actions;
+export default productSlice.reducer;

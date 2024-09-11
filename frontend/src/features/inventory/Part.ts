@@ -58,7 +58,6 @@ export default class Part extends InventoryItem {
   }
 }
 
-// Part.ts
 export interface PartInterface {
   id?: string;
   name: string;
