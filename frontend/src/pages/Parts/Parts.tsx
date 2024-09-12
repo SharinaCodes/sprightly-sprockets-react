@@ -1,82 +1,45 @@
-import React from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { FaPlusSquare } from "react-icons/fa";
 import PartComponent from "./Part";
-import Part from "../../features/inventory/Part";
-
-const partData = [
-  {
-    _id: "66c623892f35ddc2d66477de",
-    name: "Gear",
-    price: 12.99,
-    stock: 11,
-    min: 10,
-    max: 200,
-    type: "InHouse",
-    machineId: "MCH-001",
-    companyName: null,
-  },
-  {
-    _id: "66c6239d2f35ddc2d66477e0",
-    name: "Bolt",
-    price: 0.99,
-    stock: 55,
-    min: 55,
-    max: 1000,
-    type: "Outsourced",
-    machineId: null,
-    companyName: "Fasteners Inc.",
-  },
-  {
-    _id: "66c623a62f35ddc2d66477e2",
-    name: "Axle",
-    price: 25.5,
-    stock: 75,
-    min: 20,
-    max: 150,
-    type: "InHouse",
-    machineId: "MCH-002",
-    companyName: null,
-  },
-  {
-    _id: "66c623af2f35ddc2d66477e4",
-    name: "Nut",
-    price: 0.5,
-    stock: 300,
-    min: 30,
-    max: 600,
-    type: "Outsourced",
-    machineId: null,
-    companyName: "Nutty Supplies Ltd.",
-  },
-  {
-    _id: "66c623b72f35ddc2d66477e6",
-    name: "Washer",
-    price: 0.1,
-    stock: 1000,
-    min: 100,
-    max: 2000,
-    type: "InHouse",
-    machineId: "MCH-003",
-    companyName: null,
-  },
-];
+import { RootState, AppDispatch } from "../../app/store";
+import { getParts, reset } from "../../features/parts/partSlice";
+import Spinner from "../../components/Spinner";
 
 const Parts: React.FC = () => {
-  const parts = partData.map(
-    (part) =>
-      new Part(
-        part.name,
-        part.price,
-        part.stock,
-        part.min,
-        part.max,
-        part.type,
-        part.machineId,
-        part.companyName
-      )
+  // Fetch parts state from Redux
+  const { parts, isLoading, isSuccess, isError, message } = useSelector(
+    (state: RootState) => state.part
   );
 
+  const dispatch = useDispatch<AppDispatch>();
+
+  //clear state on unmount
+  useEffect(() => {
+    return () => {
+      if (isSuccess) {
+        dispatch(reset());
+      }
+    };
+  }, [dispatch, isSuccess]);
+
+  // Fetch parts on component mount
+  useEffect(() => {
+    dispatch(getParts());
+  }, [dispatch]);
+
+  // Display spinner while loading
+  if (isLoading) {
+    return <Spinner />;
+  }
+
+  // Handle errors
+  if (isError) {
+    return <p>Error: {message}</p>;
+  }
+
+  // Delete handler
   const handleDelete = (id: string | undefined) => {
     console.log("Delete part with id:", id);
     // Implement delete functionality
@@ -130,13 +93,15 @@ const Parts: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {parts.map((part) => (
-                  <PartComponent
-                    key={part.getId()}
-                    part={part}
-                    handleDelete={handleDelete}
-                  />
-                ))}
+                {parts.map((part) =>
+                  part._id ? ( // Ensure id exists
+                    <PartComponent
+                      key={part._id}
+                      part={part}
+                      handleDelete={handleDelete}
+                    />
+                  ) : null // Skip rendering if no id
+                )}
               </tbody>
             </table>
           </div>

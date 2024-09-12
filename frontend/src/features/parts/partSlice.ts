@@ -1,5 +1,3 @@
-// partSlice.ts
-
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import partService from './partService';
 import { RootState } from '../../app/store'; // Make sure this points to the correct location
@@ -40,6 +38,24 @@ export const createPart = createAsyncThunk(
   }
 );
 
+// Get all parts
+export const getParts = createAsyncThunk<PartInterface[], void, { state: RootState }>(
+  'parts/getAll',
+  async (_, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user?.token;
+      if (!token) throw new Error('Unauthorized'); // Early return if no token
+      return await partService.getParts(token);
+    } catch (error: any) {
+      const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 // Part slice
 const partSlice = createSlice({
   name: 'parts',
@@ -63,6 +79,20 @@ const partSlice = createSlice({
         state.parts.push(action.payload as PartInterface); 
       })
       .addCase(createPart.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload as string;
+      })
+      builder
+      .addCase(getParts.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getParts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.parts = action.payload;
+      })
+      .addCase(getParts.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload as string;

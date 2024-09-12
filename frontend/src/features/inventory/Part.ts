@@ -59,7 +59,7 @@ export default class Part extends InventoryItem {
 }
 
 export interface PartInterface {
-  id?: string;
+  _id?: string;
   name: string;
   price: number;
   stock: number;
