@@ -20,8 +20,27 @@ const createProduct = async (productData: ProductInterface, token: string): Prom
   }
 };
 
+// Get all parts
+const getProducts = async (token: string): Promise<ProductInterface[]> => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    };
+
+   const response = await axios.get<ProductInterface[]>(API_URL, config); 
+   return response.data;
+ } catch (error: any) {
+   console.error("Unable to get products:", error);
+   throw new Error(error.response?.data?.message || error.message || "Unable to get products");
+ }
+};
+
+
 const productService = {
   createProduct,
+  getProducts
 };
 
 export default productService;

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaRegTrashAlt, FaRegEdit } from "react-icons/fa";
-import { PartInterface } from "../../features/inventory/Part"; // Use the interface
+import { PartInterface } from "../../features/inventory/Part";
 
 interface PartComponentProps {
   part: PartInterface; // Using PartInterface instead of the Part class

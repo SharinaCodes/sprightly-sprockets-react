@@ -1,10 +1,11 @@
-import React from "react";
+import {useEffect} from "react";
 import { Link } from "react-router-dom";
 import { FaRegTrashAlt, FaRegEdit } from "react-icons/fa";
-import Product from "../../features/inventory/Product";
+import { ProductInterface } from "../../features/inventory/Product";
+
 interface ProductComponentProps {
-  product: Product; // Using the Product class directly
-  handleDelete: (id: string) => void;
+  product: ProductInterface;
+  handleDelete: (id: string | undefined) => void;
 }
 
 const ProductComponent: React.FC<ProductComponentProps> = ({
@@ -12,15 +13,15 @@ const ProductComponent: React.FC<ProductComponentProps> = ({
   handleDelete,
 }) => (
   <tr className="border-bottom">
-    <td>{product.getName()}</td>
-    <td>{product.getPrice()}</td>
-    <td>{product.getStock()}</td>
-    <td>{product.getMin()}</td>
-    <td>{product.getMax()}</td>
+    <td>{product.name}</td>
+    <td>{product.price}</td>
+    <td>{product.stock}</td>
+    <td>{product.min}</td>
+    <td>{product.max}</td>
     <td className="text-center">
       <div className="d-flex justify-content-center">
         <Link
-          to={`/edit-product/${product.getId()}`}
+          to={`/edit-product/${product._id}`}
           className="btn btn-link p-0 mr-2"
         >
           <FaRegEdit />
@@ -29,7 +30,7 @@ const ProductComponent: React.FC<ProductComponentProps> = ({
           type="button"
           className="btn btn-link p-0"
           onClick={() => {
-            const productId = product.getId(); // Get the ID
+            const productId = product._id; // Get the ID
             if (productId) {
               handleDelete(productId); // Only call handleDelete if ID exists
             } else {

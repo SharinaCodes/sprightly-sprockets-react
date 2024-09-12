@@ -1,65 +1,43 @@
-import React from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { FaPlusSquare } from "react-icons/fa";
 import ProductComponent from "./Product";
-import Product from "../../features/inventory/Product";
-
-const productData = [
-  {
-    id: "66c624532f35ddc2d66477e9",
-    name: "Gearbox",
-    price: 49.99,
-    stock: 50,
-    min: 10,
-    max: 100,
-  },
-  {
-    id: "66c6245d2f35ddc2d66477eb",
-    name: "Axle Assembly",
-    price: 75,
-    stock: 30,
-    min: 5,
-    max: 60,
-  },
-  {
-    id: "66c624642f35ddc2d66477ed",
-    name: "Fastening Kit",
-    price: 9.99,
-    stock: 200,
-    min: 20,
-    max: 500,
-  },
-  {
-    id: "66c6246b2f35ddc2d66477ef",
-    name: "Drive Shaft",
-    price: 120,
-    stock: 20,
-    min: 5,
-    max: 40,
-  },
-  {
-    id: "66c624742f35ddc2d66477f1",
-    name: "Mechanical Assembly",
-    price: 200,
-    stock: 15,
-    min: 3,
-    max: 30,
-  },
-];
+import { RootState, AppDispatch } from "../../app/store";
+import { getProducts, reset } from "../../features/products/productSlice";
+import Spinner from "../../components/Spinner";
+import {toast} from 'react-toastify';
 
 const Products: React.FC = () => {
-  const products = productData.map(
-    (product) =>
-      new Product(
-        product.name,
-        product.price,
-        product.stock,
-        product.min,
-        product.max
-      )
+  //Fetch all products from Redux
+  const {products, isLoading, isSuccess, isError, message} = useSelector(
+    (state: RootState) => state.product
   );
 
-  const handleDelete = (id: string) => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  //clear state on unmount
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+    return () => {
+      if (isSuccess) {
+        dispatch(reset());
+      }
+    }
+  }, [dispatch, isError, isSuccess, message]);
+
+  // Fetch products on mount
+  useEffect(() => {
+    dispatch(getProducts());
+  }, [dispatch])
+
+  // display spinner while loading
+  if (isLoading) {
+    return <Spinner />
+  }
+  const handleDelete = (id: string | undefined) => {
     console.log("Delete product with id:", id);
     // Implement delete functionality
   };
@@ -113,11 +91,12 @@ const Products: React.FC = () => {
               <tbody>
                 {products.map((product) => (
                   <ProductComponent
-                    key={product.getId()}
+                    key={product._id}
                     product={product}
                     handleDelete={handleDelete}
                   />
-                ))}
+                )
+                )}
               </tbody>
             </table>
           </div>
