@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import partService from './partService';
-import { RootState } from '../../app/store'; // Make sure this points to the correct location
-import { PartInterface } from '../../features/inventory/Part'; // Import the correct Part type
+import { RootState } from '../../app/store';
+import { PartInterface } from '../../features/inventory/Part';
 
 // Define the state interface for parts
 interface PartState {
@@ -43,9 +43,7 @@ export const getParts = createAsyncThunk<PartInterface[], void, { state: RootSta
   'parts/getAll',
   async (_, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user?.token;
-      if (!token) throw new Error('Unauthorized'); // Early return if no token
-      return await partService.getParts(token);
+      return await partService.getParts();
     } catch (error: any) {
       const message =
         (error.response && error.response.data && error.response.data.message) ||

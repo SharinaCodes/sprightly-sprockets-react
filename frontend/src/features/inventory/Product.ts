@@ -1,5 +1,6 @@
 import InventoryItem from "./InventoryItem";
 import Part from "./Part";
+import { PartInterface } from "./Part";
 
 export default class Product extends InventoryItem {
   private associatedParts: Part[];
@@ -37,12 +38,18 @@ export default class Product extends InventoryItem {
   }
 }
 
+export interface AssociatedPartForAPI {
+  partId: string;
+  name: string;
+}
+
 export interface ProductInterface {
-  id?: string;
+  _id?: string;
   name: string;
   price: number;
   stock: number;
   min: number;
   max: number;
-  associatedParts: Part[];
+  associatedParts: (PartInterface | AssociatedPartForAPI)[];
 }
+

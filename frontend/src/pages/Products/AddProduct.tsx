@@ -1,45 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ObjectId } from 'bson';
-import Part from '../../features/inventory/Part';
-import Product from "../../features/inventory/Product";
-
-// Example of existing parts data (you'll likely replace this with data from your API or state)
-const existingPartsData = [
-  {
-    _id: "66c623892f35ddc2d66477de",
-    name: "Gear",
-    price: 12.99,
-    stock: 11,
-    min: 10,
-    max: 200,
-    type: "InHouse",
-    machineId: "MCH-001",
-    companyName: null,
-  },
-  {
-    _id: "66c6239d2f35ddc2d66477e0",
-    name: "Bolt",
-    price: 0.99,
-    stock: 55,
-    min: 55,
-    max: 1000,
-    type: "Outsourced",
-    machineId: null,
-    companyName: "Fasteners Inc.",
-  },
-  {
-    _id: "66c623a62f35ddc2d66477e2",
-    name: "Axle",
-    price: 25.5,
-    stock: 75,
-    min: 20,
-    max: 150,
-    type: "InHouse",
-    machineId: "MCH-002",
-    companyName: null,
-  },
-];
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../../app/store";
+import { getParts } from "../../features/parts/partSlice";
+import { createProduct, reset } from "../../features/products/productSlice";
+import { ProductInterface, AssociatedPartForAPI } from "../../features/inventory/Product";
+import { PartInterface } from "../../features/inventory/Part";
+import { toast } from "react-toastify";
+import Spinner from "../../components/Spinner";
 
 const AddProduct: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -50,15 +18,37 @@ const AddProduct: React.FC = () => {
     max: "",
   });
 
-  const [associatedParts, setAssociatedParts] = useState<Part[]>([]); // Parts associated with the product
+  const [associatedParts, setAssociatedParts] = useState<PartInterface[]>([]); // Parts associated with the product
   const [selectedPartId, setSelectedPartId] = useState<string>(""); // ID of the selected part to associate
 
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
-  // Go back to the previous page
-  const handleGoBack = () => {
-    navigate(-1); // Navigates back to the last visited page in history
-  };
+  // Fetch all parts from Redux state
+  const { parts, isLoading, isError, isSuccess, message } = useSelector(
+    (state: RootState) => state.part
+  );
+  const { isSuccess: productSuccess, isError: productError } = useSelector(
+    (state: RootState) => state.product
+  );
+
+  // Fetch parts when component mounts
+  useEffect(() => {
+    dispatch(getParts());
+  }, [dispatch]);
+
+  // Handle success/error state after product creation
+  useEffect(() => {
+    if (productSuccess) {
+      toast.success("Product added successfully!");
+      navigate("/products");
+      dispatch(reset());
+    }
+
+    if (productError) {
+      toast.error(message || "Failed to add product.");
+    }
+  }, [productSuccess, productError, message, navigate, dispatch]);
 
   // Handle input change for product data
   const handleProductChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,62 +57,68 @@ const AddProduct: React.FC = () => {
 
   // Handle selection of a part to associate with the product
   const handleAddPart = () => {
-    const selectedPart = existingPartsData.find((part) => part._id === selectedPartId);
-    if (selectedPart) {
-      const part = new Part(
-        selectedPart.name,
-        selectedPart.price,
-        selectedPart.stock,
-        selectedPart.min,
-        selectedPart.max,
-        selectedPart.type,
-        selectedPart.type === "InHouse" ? selectedPart.machineId : null,
-        selectedPart.type === "Outsourced" ? selectedPart.companyName : null
-      );
-
-      // Add selected part to associated parts
-      setAssociatedParts([...associatedParts, part]);
-
-      // Reset the selected part dropdown
+    const selectedPart = parts.find((part) => part._id === selectedPartId);
+    if (
+      selectedPart &&
+      !associatedParts.some((part) => part._id === selectedPartId)
+    ) {
+      setAssociatedParts([...associatedParts, selectedPart]);
       setSelectedPartId("");
+    } else {
+      toast.warn("Part is already associated with this product.");
     }
   };
 
   // Handle form submission for the product
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     try {
-      const newProduct = new Product(
-        formData.name,
-        parseFloat(formData.price),
-        parseInt(formData.stock),
-        parseInt(formData.min),
-        parseInt(formData.max),
-        associatedParts
-      );
-
-      // Logic to add the product would go here (e.g., dispatching to Redux, making an API call)
-      console.log("Product added", newProduct);
-
-      navigate("/");
+      // Convert associatedParts to the format required by the API
+      const associatedPartsForApi: AssociatedPartForAPI[] = associatedParts.map((part) => ({
+        partId: part._id as string, // Cast to string as partId should always be defined in this context
+        name: part.name,
+      }));
+  
+      const newProduct: ProductInterface = {
+        name: formData.name,
+        price: parseFloat(formData.price),
+        stock: parseInt(formData.stock),
+        min: parseInt(formData.min),
+        max: parseInt(formData.max),
+        associatedParts: associatedPartsForApi, // Pass the array of AssociatedPartForAPI objects here
+      };
+  
+      dispatch(createProduct(newProduct));
+  
+      if (!isError) {
+        toast.success("Product added successfully!");
+        navigate("/products");
+      } else {
+        toast.error(message || "Failed to add product.");
+      }
     } catch (error) {
       console.error("Failed to add product:", error);
     }
   };
+  
+  
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <div className="add-product">
       <div className="container">
         <div className="row">
           <div className="col-md-8 m-auto">
-            <button className="btn btn-light" onClick={handleGoBack}>
+            <button className="btn btn-light" onClick={() => navigate(-1)}>
               Go Back
             </button>
 
             <h1 className="display-4 text-center">Add Product</h1>
             <form onSubmit={onSubmit}>
-              {/* Product form fields */}
               <div className="form-group">
                 <input
                   type="text"
@@ -180,7 +176,6 @@ const AddProduct: React.FC = () => {
               </div>
 
               <h2 className="mt-4">Add Associated Parts</h2>
-              {/* Dropdown for selecting an existing part */}
               <div className="form-group">
                 <select
                   className="form-control form-control-lg"
@@ -188,11 +183,16 @@ const AddProduct: React.FC = () => {
                   onChange={(e) => setSelectedPartId(e.target.value)}
                 >
                   <option value="">Select a Part</option>
-                  {existingPartsData.map((part) => (
-                    <option key={part._id} value={part._id}>
-                      {part.name} (Stock: {part.stock}, Price: {part.price})
-                    </option>
-                  ))}
+                  {parts
+                    .filter(
+                      (part) =>
+                        !associatedParts.some((ap) => ap._id === part._id)
+                    )
+                    .map((part) => (
+                      <option key={part._id} value={part._id}>
+                        {part.name} (Stock: {part.stock}, Price: {part.price})
+                      </option>
+                    ))}
                 </select>
               </div>
 
@@ -210,7 +210,7 @@ const AddProduct: React.FC = () => {
                 <ul className="list-group">
                   {associatedParts.map((part, index) => (
                     <li key={index} className="list-group-item">
-                      {part.getName()} (Stock: {part.getStock()}, Price: {part.getPrice()})
+                      {part.name} (Stock: {part.stock}, Price: {part.price})
                     </li>
                   ))}
                 </ul>

@@ -12,7 +12,7 @@ const createProduct = async (productData: ProductInterface, token: string): Prom
   };
 
   try {
-    const response = await axios.post<ProductInterface>(API_URL, productData, config); // Explicitly type the response
+    const response = await axios.post<ProductInterface>(API_URL, productData, config);
     return response.data;
   } catch (error: any) {
     console.error("Failed to create product:", error);
