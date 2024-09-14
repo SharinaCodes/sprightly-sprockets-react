@@ -107,8 +107,9 @@ const partService = {
   createPart,
   getParts,
   updatePart,
-  lookupPartById
-  
+  lookupPartById,
+  lookupPartByName,
+  deletePart,
 };
 
 export default partService;

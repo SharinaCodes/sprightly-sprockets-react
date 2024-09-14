@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { FaPlusSquare } from "react-icons/fa";
 import PartComponent from "./Part";
 import { RootState, AppDispatch } from "../../app/store";
-import { getParts, reset } from "../../features/parts/partSlice";
+import { getParts, deletePart, reset } from "../../features/parts/partSlice";
 import Spinner from "../../components/Spinner";
 
 const Parts: React.FC = () => {
@@ -40,10 +40,14 @@ const Parts: React.FC = () => {
   }
 
   // Delete handler
-  const handleDelete = (id: string | undefined) => {
-    console.log("Delete part with id:", id);
-    // Implement delete functionality
-  };
+const handleDelete = (id: string | undefined) => {
+  if (id) {
+    dispatch(deletePart(id)); // Dispatch the delete action with the part ID
+  } else {
+    console.error("Invalid part ID for deletion.");
+  }
+};
+
 
   return (
     <div className="container mt-5">

@@ -7,6 +7,7 @@ import Home from "./pages/Parts/Parts"; // Adjust the path as needed
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AddPart from "./pages/Parts/AddPart";
+import EditPart from "./pages/Parts/EditPart";
 import Products from "./pages/Products/Products";
 import AddProduct from "./pages/Products/AddProduct";
 import PrivateRoute from "./components/PrivateRoute";
@@ -24,15 +25,18 @@ const App: React.FC = () => {
           <Route path="/add-part" element={<PrivateRoute />}>
             <Route path="/add-part" element={<AddPart />} />
           </Route>
+          <Route path="/edit-part" element={<PrivateRoute />}>
+            <Route path="/edit-part/:partId" element={<EditPart />} />
+          </Route>
           <Route path="/products" element={<PrivateRoute />}>
-            <Route path="/products" element={<Products />} />            
+            <Route path="/products" element={<Products />} />
           </Route>
           <Route path="/add-product" element={<PrivateRoute />}>
-              <Route path="/add-product" element={<AddProduct />} />
-            </Route>
-            <Route path="/reports" element={<PrivateRoute />}>
-              <Route path="/reports" element={<Reports />} />
-            </Route>
+            <Route path="/add-product" element={<AddProduct />} />
+          </Route>
+          <Route path="/reports" element={<PrivateRoute />}>
+            <Route path="/reports" element={<Reports />} />
+          </Route>
         </Routes>
       </Router>
       <ToastContainer />

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom"; // useParams to get part ID from route
 import { useSelector } from "react-redux";
-import Part from "../../features/inventory/Part";
 import { RootState, AppDispatch } from "../../app/store";
 import { useDispatch } from "react-redux";
-import { updatePart, reset } from '../../features/parts/partSlice';
+import { getParts, updatePart, reset } from "../../features/parts/partSlice"; // Import updatePart action
+import Spinner from "../../components/Spinner";
 import { toast } from "react-toastify";
 
 // Define the interface for form state
@@ -19,102 +19,87 @@ interface FormData {
   companyName: string;
 }
 
-// Define the User interface to ensure that it has firstName and email
-interface User {
-  firstName: string;
-  email: string;
-}
-
 const EditPart: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({
-    name: "",
-    price: "",
-    stock: "",
-    min: "",
-    max: "",
-    type: "InHouse", // Default type
-    machineId: "",
-    companyName: "",
-  });
+  const { partId } = useParams<{ partId: string }>(); // Get the part ID from the URL
+  const [formData, setFormData] = useState<FormData | null>(null); // Start with null formData
 
-  const user = useSelector((state: RootState) => state.auth.user) as User | null;
-  const { isSuccess, isError, message } = useSelector((state: RootState) => state.part);
-
-  const navigate = useNavigate();
+  const { parts, isSuccess, isError, message } = useSelector(
+    (state: RootState) => state.part
+  );
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
-      setFormData((prevData) => ({
-        ...prevData,
-        name: user.firstName,
-      }));
+    if (!parts.length) {
+      dispatch(getParts()); // Fetch parts if not already in the state
+    } else {
+      const partToEdit = parts.find((part) => part._id === partId);
+      if (partToEdit) {
+        setFormData({
+          name: partToEdit.name,
+          price: String(partToEdit.price),
+          stock: String(partToEdit.stock),
+          min: String(partToEdit.min),
+          max: String(partToEdit.max),
+          type: partToEdit.type as "InHouse" | "Outsourced",
+          machineId: partToEdit.machineId || "",
+          companyName: partToEdit.companyName || "",
+        });
+      }
     }
-  }, [user]);
+  }, [dispatch, partId, parts]);
 
   // Monitor Redux state for success/error
   useEffect(() => {
     if (isSuccess) {
       toast.success("Part updated successfully!");
-      dispatch(reset());  // Reset the state after success
-      navigate("/");  // Only navigate on success
+      dispatch(reset()); // Reset the state after success
+      navigate("/"); // Navigate away after success
     }
-  
+
     if (isError) {
       toast.error(message || "Failed to update part.");
-      dispatch(reset());  // Reset the state after error
+      dispatch(reset()); // Reset the state after error
     }
   }, [isSuccess, isError, message, navigate, dispatch]);
-  
 
   // Handle input change
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  // Convert Part class instance to a plain object
-  const convertPartToPlainObject = (part: Part) => {
-    return {
-      name: part.getName(),
-      price: part.getPrice(),
-      stock: part.getStock(),
-      min: part.getMin(),
-      max: part.getMax(),
-      type: part.getType() as "InHouse" | "Outsourced", // Explicitly cast the type
-      machineId: part.getMachineId(),
-      companyName: part.getCompanyName(),
-    };
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    if (formData) {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
   };
 
   // Handle form submission
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      // Create a new Part instance using your class
-      const newPart = new Part(
-        formData.name,
-        parseFloat(formData.price),
-        parseInt(formData.stock),
-        parseInt(formData.min),
-        parseInt(formData.max),
-        formData.type,
-        formData.type === "InHouse" ? formData.machineId : null,
-        formData.type === "Outsourced" ? formData.companyName : null
-      );
+    if (formData) {
+      const updatedPart = {
+        _id: partId, // Include the part ID to update
+        name: formData.name,
+        price: parseFloat(formData.price),
+        stock: parseInt(formData.stock),
+        min: parseInt(formData.min),
+        max: parseInt(formData.max),
+        type: formData.type,
+        machineId: formData.type === "InHouse" ? formData.machineId : null,
+        companyName: formData.type === "Outsourced" ? formData.companyName : null,
+      };
 
-      // Convert Part instance to plain object for dispatching
-      const partObject = convertPartToPlainObject(newPart);
-
-      // Dispatch the part object to Redux
-      dispatch(createPart(partObject));
-    } catch (error) {
-      console.error("Failed to add part:", error);
+      dispatch(updatePart(updatedPart));
     }
   };
 
+  // Show loading or spinner until part data is fetched
+  if (!formData) {
+    return <Spinner />;
+  }
+
   return (
-    <div className="add-part">
+    <div className="edit-part">
       <div className="container">
         <div className="row">
           <div className="col-md-8 m-auto">
@@ -183,7 +168,7 @@ const EditPart: React.FC = () => {
                 <select
                   className="form-control form-control-lg"
                   name="type"
-                  value={formData.type}
+                  value={formData.type || ""} // Ensure the dropdown is controlled by formData
                   onChange={handleChange}
                   required
                 >
@@ -194,7 +179,7 @@ const EditPart: React.FC = () => {
               {formData.type === "InHouse" && (
                 <div className="form-group">
                   <input
-                    type="number"
+                    type="text"
                     className="form-control form-control-lg"
                     placeholder="* Machine ID"
                     name="machineId"
@@ -220,7 +205,7 @@ const EditPart: React.FC = () => {
               <input
                 type="submit"
                 className="btn btn-info btn-block mt-4"
-                value="Add Part"
+                value="Update Part"
               />
             </form>
           </div>

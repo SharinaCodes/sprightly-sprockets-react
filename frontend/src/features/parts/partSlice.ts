@@ -6,6 +6,7 @@ import { PartInterface } from "../../features/inventory/Part";
 // Define the state interface for parts
 interface PartState {
   parts: PartInterface[];
+  part: PartInterface | null;
   isLoading: boolean;
   isError: boolean;
   isSuccess: boolean;
@@ -19,6 +20,7 @@ const initialState: PartState = {
   isError: false,
   isSuccess: false,
   message: "",
+  part: null
 };
 
 // Async thunk for creating a part
@@ -57,6 +59,7 @@ export const getParts = createAsyncThunk<
   }
 });
 
+
 export const updatePart = createAsyncThunk(
   "parts/update",
   async (partData: PartInterface, thunkAPI) => {
@@ -68,6 +71,55 @@ export const updatePart = createAsyncThunk(
         (error.response &&
           error.response.data &&
           error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Lookup part by ID
+export const lookupPartById = createAsyncThunk<PartInterface, string, { state: RootState }>(
+  "parts/lookupById",
+  async (partId, thunkAPI) => {
+    try {
+      return await partService.lookupPartById(partId);
+    } catch (error: any) {
+      const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Lookup part by name
+export const lookupPartByName = createAsyncThunk<PartInterface[], string, { state: RootState }>(
+  "parts/lookupByName",
+  async (name, thunkAPI) => {
+    try {
+      return await partService.lookupPartByName(name);
+    } catch (error: any) {
+      const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Delete a part by ID
+export const deletePart = createAsyncThunk<void, string, { state: RootState }>(
+  "parts/delete",
+  async (partId, thunkAPI) => {
+    try {
+      const token = (thunkAPI.getState() as RootState).auth.user?.token;
+      return await partService.deletePart(partId, token!);
+    } catch (error: any) {
+      const message =
+        (error.response && error.response.data && error.response.data.message) ||
         error.message ||
         error.toString();
       return thunkAPI.rejectWithValue(message);
@@ -115,6 +167,52 @@ const partSlice = createSlice({
         state.isError = true;
         state.message = action.payload as string;
       })
+      // Lookup part by ID
+      .addCase(lookupPartById.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(lookupPartById.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.part = action.payload; // Store the single part data in the state
+      })
+      .addCase(lookupPartById.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload as string;
+      })
+
+      // Lookup part by name
+      .addCase(lookupPartByName.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(lookupPartByName.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.parts = action.payload; // Replace parts with the search results
+      })
+      .addCase(lookupPartByName.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload as string;
+      })
+
+      // Delete part
+      .addCase(deletePart.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deletePart.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        // Optionally, remove the deleted part from state
+        state.parts = state.parts.filter((part) => part._id !== action.meta.arg);
+      })
+      .addCase(deletePart.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload as string;
+      })
+
       .addCase(updatePart.pending, (state) => {
         state.isLoading = true;
       })
