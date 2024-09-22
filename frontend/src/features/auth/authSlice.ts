@@ -3,7 +3,7 @@ import authService from './authService';
 import { RootState } from '../../app/store';
 
 // Define the User interface
-interface User {
+export interface User {
   id: string;
   firstName: string;
   lastName: string;

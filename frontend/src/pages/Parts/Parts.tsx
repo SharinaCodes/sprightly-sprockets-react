@@ -14,9 +14,10 @@ const Parts: React.FC = () => {
     (state: RootState) => state.part
   );
 
+  const { user } = useSelector((state: RootState) => state.auth); // Fetch user state with proper typing
+
   const dispatch = useDispatch<AppDispatch>();
 
-  // Handle errors and clear state on unmount
   useEffect(() => {
     if (isError) {
       toast.error(message);
@@ -29,17 +30,14 @@ const Parts: React.FC = () => {
     };
   }, [dispatch, isError, message]);
 
-  // Fetch parts on component mount
   useEffect(() => {
     dispatch(getParts());
   }, [dispatch]);
 
-  // Display spinner while loading
   if (isLoading) {
     return <Spinner />;
   }
 
-  // Delete handler
   const handleDelete = (id: string | undefined) => {
     if (id) {
       dispatch(deletePart(id)); // Dispatch the delete action with the part ID
@@ -92,18 +90,19 @@ const Parts: React.FC = () => {
                   <th>Min</th>
                   <th>Max</th>
                   <th>Source</th>
-                  <th className="text-center">Actions</th>
+                  {user && <th className="text-center">Actions</th>}
                 </tr>
               </thead>
               <tbody>
                 {parts.map((part) =>
-                  part._id ? ( // Ensure id exists
+                  part._id ? (
                     <PartComponent
                       key={part._id}
                       part={part}
                       handleDelete={handleDelete}
+                      user={user ?? undefined} // Pass user as a prop with proper typing
                     />
-                  ) : null // Skip rendering if no id
+                  ) : null
                 )}
               </tbody>
             </table>
