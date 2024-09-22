@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Part = require("../models/partModel");
+const Product = require('../models/productModel');
 const mongoose = require("mongoose");
 const handleValidationError = require("../utils/errorHandler");
 
@@ -131,12 +132,11 @@ const updatePart = asyncHandler(async (req, res) => {
 // @access  Private
 const deletePart = asyncHandler(async (req, res) => {
   const partId = req.params.id;
-
   try {
     // Check if the ID is a valid ObjectId
     if (!mongoose.Types.ObjectId.isValid(partId)) {
       res.status(400);
-      throw new Error("Invalid ID format");
+      throw new Error("Invaliad ID format");
     }
 
     // Find the part by ID

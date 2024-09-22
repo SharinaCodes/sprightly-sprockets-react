@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Product = require('./productModel');
 
 const partSchema = mongoose.Schema({
     name: {
@@ -81,5 +82,19 @@ const partSchema = mongoose.Schema({
 {
     timestamps: true
 });
+
+//Cascading delete
+partSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
+    try {
+      // Remove the part reference from associatedParts in the Product model
+      await Product.updateMany(
+        { 'associatedParts.partId': this._id },
+        { $pull: { associatedParts: { partId: this._id } } }
+      );
+      next();
+    } catch (error) {
+      next(error);
+    }
+  });
 
 module.exports = mongoose.model('Part', partSchema);

@@ -6,23 +6,28 @@ import PartComponent from "./Part";
 import { RootState, AppDispatch } from "../../app/store";
 import { getParts, deletePart, reset } from "../../features/parts/partSlice";
 import Spinner from "../../components/Spinner";
+import { toast } from "react-toastify";
 
 const Parts: React.FC = () => {
   // Fetch parts state from Redux
-  const { parts, isLoading, isSuccess, isError, message } = useSelector(
+  const { parts, isLoading, isError, message } = useSelector(
     (state: RootState) => state.part
   );
 
   const dispatch = useDispatch<AppDispatch>();
 
-  //clear state on unmount
+  // Handle errors and clear state on unmount
   useEffect(() => {
+    if (isError) {
+      toast.error(message);
+      dispatch(reset()); // Reset after showing the toast for error
+    }
+
+    // Cleanup on unmount or when navigating away
     return () => {
-      if (isSuccess) {
-        dispatch(reset());
-      }
+      dispatch(reset()); // Ensure state is cleared on unmount
     };
-  }, [dispatch, isSuccess]);
+  }, [dispatch, isError, message]);
 
   // Fetch parts on component mount
   useEffect(() => {
@@ -34,20 +39,14 @@ const Parts: React.FC = () => {
     return <Spinner />;
   }
 
-  // Handle errors
-  if (isError) {
-    return <p>Error: {message}</p>;
-  }
-
   // Delete handler
-const handleDelete = (id: string | undefined) => {
-  if (id) {
-    dispatch(deletePart(id)); // Dispatch the delete action with the part ID
-  } else {
-    console.error("Invalid part ID for deletion.");
-  }
-};
-
+  const handleDelete = (id: string | undefined) => {
+    if (id) {
+      dispatch(deletePart(id)); // Dispatch the delete action with the part ID
+    } else {
+      console.error("Invalid part ID");
+    }
+  };
 
   return (
     <div className="container mt-5">
@@ -63,7 +62,7 @@ const handleDelete = (id: string | undefined) => {
           <nav className="navbar navbar-light bg-light">
             <form className="form-inline w-100">
               <div className="row w-100">
-                <div className="col-8 col-sm-10">
+                <div className="col-8 col-md-10">
                   <input
                     className="form-control w-100"
                     type="search"
@@ -71,7 +70,7 @@ const handleDelete = (id: string | undefined) => {
                     aria-label="Search"
                   />
                 </div>
-                <div className="col-4 col-sm-2">
+                <div className="col-4 col-md-2">
                   <button
                     className="btn btn-outline-primary w-100"
                     type="submit"

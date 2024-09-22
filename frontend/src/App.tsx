@@ -10,6 +10,7 @@ import AddPart from "./pages/Parts/AddPart";
 import EditPart from "./pages/Parts/EditPart";
 import Products from "./pages/Products/Products";
 import AddProduct from "./pages/Products/AddProduct";
+import EditProduct from "./pages/Products/EditProduct";
 import PrivateRoute from "./components/PrivateRoute";
 import Reports from "./pages/Reports/Reports";
 
@@ -33,6 +34,9 @@ const App: React.FC = () => {
           </Route>
           <Route path="/add-product" element={<PrivateRoute />}>
             <Route path="/add-product" element={<AddProduct />} />
+          </Route>
+          <Route path="/edit-product" element={<PrivateRoute />}>
+            <Route path="/edit-product/:productId" element={<EditProduct />} />
           </Route>
           <Route path="/reports" element={<PrivateRoute />}>
             <Route path="/reports" element={<Reports />} />

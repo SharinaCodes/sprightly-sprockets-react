@@ -135,6 +135,10 @@ const deleteProduct = asyncHandler(async (req, res) => {
     const product = await Product.findById(productId);
 
     if (product) {
+      //check for associated parts
+      if(product.associatedParts.length > 0) {
+        throw new Error("Cannot delete a product with associated parts");
+      }
       // Delete the product
       await product.deleteOne();
       res.status(200).json({ message: "Product removed" });

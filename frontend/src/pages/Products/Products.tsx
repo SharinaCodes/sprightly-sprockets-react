@@ -4,42 +4,51 @@ import { Link } from "react-router-dom";
 import { FaPlusSquare } from "react-icons/fa";
 import ProductComponent from "./Product";
 import { RootState, AppDispatch } from "../../app/store";
-import { getProducts, reset } from "../../features/products/productSlice";
+import {
+  getProducts,
+  deleteProduct,
+  reset,
+} from "../../features/products/productSlice";
 import Spinner from "../../components/Spinner";
-import {toast} from 'react-toastify';
+import { toast } from "react-toastify";
 
 const Products: React.FC = () => {
-  //Fetch all products from Redux
-  const {products, isLoading, isSuccess, isError, message} = useSelector(
+  // Fetch products state from Redux
+  const { products, isLoading, isError, message } = useSelector(
     (state: RootState) => state.product
   );
 
   const dispatch = useDispatch<AppDispatch>();
 
-  //clear state on unmount
+  // Handle errors and clear state on unmount
   useEffect(() => {
     if (isError) {
       toast.error(message);
+      dispatch(reset()); // Reset after showing the toast for error
     }
-    return () => {
-      if (isSuccess) {
-        dispatch(reset());
-      }
-    }
-  }, [dispatch, isError, isSuccess, message]);
 
-  // Fetch products on mount
+    // Cleanup on unmount or when navigating away
+    return () => {
+      dispatch(reset()); // Ensure state is cleared on unmount
+    };
+  }, [dispatch, isError, message]);
+
+  // Fetch products on component mount
   useEffect(() => {
     dispatch(getProducts());
-  }, [dispatch])
+  }, [dispatch]);
 
-  // display spinner while loading
+  // Display spinner while loading
   if (isLoading) {
-    return <Spinner />
+    return <Spinner />;
   }
+
   const handleDelete = (id: string | undefined) => {
-    console.log("Delete product with id:", id);
-    // Implement delete functionality
+    if (id) {
+      dispatch(deleteProduct(id)); // Dispatch the delete action with the product ID
+    } else {
+      console.error("Invalid product ID");
+    }
   };
 
   return (
@@ -56,7 +65,7 @@ const Products: React.FC = () => {
           <nav className="navbar navbar-light bg-light">
             <form className="form-inline w-100">
               <div className="row w-100">
-                <div className="col-8 col-sm-10">
+                <div className="col-8 col-md-10">
                   <input
                     className="form-control w-100"
                     type="search"
@@ -64,7 +73,7 @@ const Products: React.FC = () => {
                     aria-label="Search"
                   />
                 </div>
-                <div className="col-4 col-sm-2">
+                <div className="col-4 col-md-2">
                   <button
                     className="btn btn-outline-primary w-100"
                     type="submit"
@@ -95,8 +104,7 @@ const Products: React.FC = () => {
                     product={product}
                     handleDelete={handleDelete}
                   />
-                )
-                )}
+                ))}
               </tbody>
             </table>
           </div>

@@ -37,11 +37,18 @@ const AddPart: React.FC = () => {
     companyName: "",
   });
 
+  const [formSubmitted, setFormSubmitted] = useState(false); // New flag to track form submission
+
   const user = useSelector((state: RootState) => state.auth.user) as User | null;
   const { isSuccess, isError, message } = useSelector((state: RootState) => state.part);
 
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    // Reset part state on mount to avoid stale state
+    dispatch(reset());
+  }, [dispatch]);
 
   useEffect(() => {
     if (user) {
@@ -54,18 +61,22 @@ const AddPart: React.FC = () => {
 
   // Monitor Redux state for success/error
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && formSubmitted) {
       toast.success("Part added successfully!");
-      dispatch(reset());  // Reset the state after success
       navigate("/");  // Only navigate on success
+      dispatch(reset());
     }
   
-    if (isError) {
+    if (isError && formSubmitted) {
       toast.error(message || "Failed to add part.");
       dispatch(reset());  // Reset the state after error
     }
-  }, [isSuccess, isError, message, navigate, dispatch]);
-  
+
+    // Cleanup on unmount or when navigating away
+    return () => {
+      dispatch(reset());
+    };
+  }, [isSuccess, isError, message, navigate, dispatch, formSubmitted]);
 
   // Handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -89,6 +100,7 @@ const AddPart: React.FC = () => {
   // Handle form submission
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setFormSubmitted(true); // Set form submission flag
 
     try {
       // Create a new Part instance using your class
