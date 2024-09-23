@@ -71,36 +71,40 @@ const Parts: React.FC = () => {
             </Link>
           </button>
           <h2 className="mb-4">Parts</h2>
-          <nav className="navbar navbar-light bg-light">
-            <form
-              className="form-inline w-100"
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSearch(); // Trigger search when button is clicked
-              }}
-            >
-              <div className="row w-100">
-                <div className="col-8 col-md-10">
-                  <input
-                    className="form-control w-100"
-                    type="search"
-                    placeholder="Search"
-                    aria-label="Search"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)} // Update search query as user types
-                  />
+
+          {/* Conditionally render the search bar only if the user is logged in */}
+          {user && (
+            <nav className="navbar navbar-light bg-light">
+              <form
+                className="form-inline w-100"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSearch(); // Trigger search when button is clicked
+                }}
+              >
+                <div className="row w-100">
+                  <div className="col-8 col-md-10">
+                    <input
+                      className="form-control w-100"
+                      type="search"
+                      placeholder="Search"
+                      aria-label="Search"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)} // Update search query as user types
+                    />
+                  </div>
+                  <div className="col-4 col-md-2">
+                    <button
+                      className="btn btn-outline-primary w-100"
+                      type="submit"
+                    >
+                      Search
+                    </button>
+                  </div>
                 </div>
-                <div className="col-4 col-md-2">
-                  <button
-                    className="btn btn-outline-primary w-100"
-                    type="submit"
-                  >
-                    Search
-                  </button>
-                </div>
-              </div>
-            </form>
-          </nav>
+              </form>
+            </nav>
+          )}
 
           <div className="table-responsive">
             <table className="table">

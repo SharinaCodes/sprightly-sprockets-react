@@ -5,7 +5,9 @@ import { RootState, AppDispatch } from "../../app/store";
 import { useDispatch } from "react-redux";
 import { getParts, updatePart, reset } from "../../features/parts/partSlice"; // Import updatePart action
 import Spinner from "../../components/Spinner";
+import NotFoundComponent from '../../components/NotFound'
 import { toast } from "react-toastify";
+import mongoose from "mongoose"; // Import mongoose to check ID validity
 
 // Define the interface for form state
 interface FormData {
@@ -22,6 +24,7 @@ interface FormData {
 const EditPart: React.FC = () => {
   const { partId } = useParams<{ partId: string }>(); // Get the part ID from the URL
   const [formData, setFormData] = useState<FormData | null>(null); // Start with null formData
+  const [isInvalidId, setIsInvalidId] = useState(false); // Track if the ID is invalid
 
   const { parts, isSuccess, isError, message } = useSelector(
     (state: RootState) => state.part
@@ -30,6 +33,12 @@ const EditPart: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Check if partId exists and is valid before calling mongoose.isValidObjectId
+    if (!partId || !mongoose.Types.ObjectId.isValid(partId)) {
+      setIsInvalidId(true); // If the part ID is not valid, set the invalid flag
+      return;
+    }
+
     if (!parts.length) {
       dispatch(getParts()); // Fetch parts if not already in the state
     } else {
@@ -45,6 +54,8 @@ const EditPart: React.FC = () => {
           machineId: partToEdit.machineId || "",
           companyName: partToEdit.companyName || "",
         });
+      } else {
+        setIsInvalidId(true); // If the part is not found, set the invalid flag
       }
     }
   }, [dispatch, partId, parts]);
@@ -78,7 +89,7 @@ const EditPart: React.FC = () => {
 
     if (formData) {
       const updatedPart = {
-        _id: partId, // Include the part ID to update
+        _id: partId!, // Use non-null assertion since we already checked if partId exists
         name: formData.name,
         price: parseFloat(formData.price),
         stock: parseInt(formData.stock),
@@ -92,6 +103,11 @@ const EditPart: React.FC = () => {
       dispatch(updatePart(updatedPart));
     }
   };
+
+  // If the ID is invalid, show a Not Found component
+  if (isInvalidId) {
+    return <NotFoundComponent />;
+  }
 
   // Show loading or spinner until part data is fetched
   if (!formData) {

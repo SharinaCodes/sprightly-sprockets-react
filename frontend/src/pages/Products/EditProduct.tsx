@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import mongoose from "mongoose";
 import { RootState, AppDispatch } from "../../app/store";
 import { getParts } from "../../features/parts/partSlice";
 import { lookupProductById, updateProduct, reset } from "../../features/products/productSlice";
@@ -8,6 +9,7 @@ import { ProductInterface, AssociatedPartForAPI } from "../../features/inventory
 import { PartInterface } from "../../features/inventory/Part";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
+import NotFoundComponent from "../../components/NotFound"; // Import the NotFoundComponent
 
 // Define the interface for form data
 interface FormData {
@@ -30,6 +32,7 @@ const EditProduct: React.FC = () => {
   const [associatedParts, setAssociatedParts] = useState<PartInterface[]>([]);
   const [selectedPartId, setSelectedPartId] = useState<string>("");
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isInvalidId, setIsInvalidId] = useState(false); // Track if the product ID is invalid
 
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
@@ -40,9 +43,14 @@ const EditProduct: React.FC = () => {
   // Fetch product details and parts on mount
   useEffect(() => {
     dispatch(reset());
-    if (productId) {
-      dispatch(lookupProductById(productId)); // Fetch the product using productId
+    
+    // Check if productId exists and is valid before dispatching actions
+    if (!productId || !mongoose.Types.ObjectId.isValid(productId)) {
+      setIsInvalidId(true); // Set the invalid flag if the ID is not valid
+      return;
     }
+    
+    dispatch(lookupProductById(productId)); // Fetch the product using productId
     dispatch(getParts()); // Fetch all parts
   }, [dispatch, productId]);
 
@@ -57,11 +65,10 @@ const EditProduct: React.FC = () => {
         max: product.max.toString(),
       });
 
-      // Avoid duplicating parts by creating a Set for unique IDs
       const uniquePartIds = new Set<string>();
 
       const associatedPartsAsParts: PartInterface[] = product.associatedParts.map((associatedPart) => {
-        if ('partId' in associatedPart) {
+        if ("partId" in associatedPart) {
           const matchingPart = parts.find((part) => part._id === associatedPart.partId);
           if (matchingPart && !uniquePartIds.has(matchingPart._id!)) {
             uniquePartIds.add(matchingPart._id!);
@@ -131,15 +138,13 @@ const EditProduct: React.FC = () => {
     setFormSubmitted(true); // Set form submission flag
 
     try {
-      // Map associatedParts to only include partId and name
       const associatedPartsForAPI: AssociatedPartForAPI[] = associatedParts.map((part) => ({
         partId: part._id as string, // Ensure the part ID is used
         name: part.name,
       }));
 
-      // Create the updated product object
       const updatedProduct: ProductInterface = {
-        _id: productId,
+        _id: productId!,
         name: formData.name,
         price: parseFloat(formData.price),
         stock: parseInt(formData.stock),
@@ -153,6 +158,11 @@ const EditProduct: React.FC = () => {
       console.error("Failed to update product:", error);
     }
   };
+
+  // If the ID is invalid, show a Not Found component
+  if (isInvalidId) {
+    return <NotFoundComponent />;
+  }
 
   // Display spinner while loading product or parts
   if (isLoading || partsLoading) {
