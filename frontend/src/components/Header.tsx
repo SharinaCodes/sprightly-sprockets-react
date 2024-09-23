@@ -18,7 +18,7 @@ const Header: React.FC = () => {
 
   return (
     <nav className="navbar navbar-expand-sm navbar-dark bg-dark mb-3 py-0">
-      <Link className="navbar-brand" to="/">
+      <Link className="navbar-brand" to="/parts">
         Sprightly Sprockets
       </Link>
       <button
@@ -31,13 +31,13 @@ const Header: React.FC = () => {
       </button>
       <div className="collapse navbar-collapse" id="mobile-nav">
         <ul className="navbar-nav ml-auto">
-          <li className="nav-item">
-            <Link className="nav-link" to="/">
-              Home
-            </Link>
-          </li>
-          {user ? (
+                    {user ? (
             <>
+            <li className="nav-item">
+                <Link className="nav-link" to="/parts">
+                  Parts
+                </Link>
+              </li>
             <li className="nav-item">
                 <Link className="nav-link" to="/products">
                   Products
