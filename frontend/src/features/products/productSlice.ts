@@ -91,6 +91,23 @@ export const lookupProductById = createAsyncThunk<ProductInterface, string, { st
   }
 );
 
+// Async thunk for looking up a product by name
+export const lookupProductByName = createAsyncThunk<ProductInterface[], string, { state: RootState }>(
+  'products/lookupByName',
+  async (name, thunkAPI) => {
+    try {
+      const token = (thunkAPI.getState() as RootState).auth.user?.token;
+      return await productService.lookupProductByName(name, token!);
+    } catch (error: any) {
+      const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 // Async thunk for deleting a product by ID
 export const deleteProduct = createAsyncThunk<void, string, { state: RootState }>(
   'products/delete',
@@ -162,6 +179,21 @@ const productSlice = createSlice({
         state.product = action.payload;
       })
       .addCase(lookupProductById.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload as string;
+      })
+
+      // Lookup product by Name
+      .addCase(lookupProductByName.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(lookupProductByName.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.products = action.payload; // Replace products with the search results
+      })
+      .addCase(lookupProductByName.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload as string;

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { FaPlusSquare } from "react-icons/fa";
@@ -6,6 +6,7 @@ import ProductComponent from "./Product";
 import { RootState, AppDispatch } from "../../app/store";
 import {
   getProducts,
+  lookupProductByName,
   deleteProduct,
   reset,
 } from "../../features/products/productSlice";
@@ -13,6 +14,8 @@ import Spinner from "../../components/Spinner";
 import { toast } from "react-toastify";
 
 const Products: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
   // Fetch products state from Redux
   const { products, isLoading, isError, message } = useSelector(
     (state: RootState) => state.product
@@ -27,21 +30,33 @@ const Products: React.FC = () => {
       dispatch(reset()); // Reset after showing the toast for error
     }
 
-    // Cleanup on unmount or when navigating away
+    // Cleanup on unmount
     return () => {
-      dispatch(reset()); // Ensure state is cleared on unmount
+      dispatch(reset());
     };
   }, [dispatch, isError, message]);
 
-  // Fetch products on component mount
+  // Fetch products on component mount or when search is cleared
   useEffect(() => {
-    dispatch(getProducts());
-  }, [dispatch]);
+    if (searchTerm.trim() === "") {
+      dispatch(getProducts());
+    }
+  }, [dispatch, searchTerm]);
 
-  // Display spinner while loading
-  if (isLoading) {
-    return <Spinner />;
-  }
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // If search term is blank, fetch all products, otherwise perform search
+    if (searchTerm.trim() === "") {
+      dispatch(getProducts());
+    } else {
+      dispatch(lookupProductByName(searchTerm));
+    }
+  };
 
   const handleDelete = (id: string | undefined) => {
     if (id) {
@@ -50,6 +65,11 @@ const Products: React.FC = () => {
       console.error("Invalid product ID");
     }
   };
+
+  // Display spinner while loading
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <div className="container mt-5">
@@ -63,14 +83,16 @@ const Products: React.FC = () => {
           </button>
           <h2 className="mb-4">Products</h2>
           <nav className="navbar navbar-light bg-light">
-            <form className="form-inline w-100">
+            <form className="form-inline w-100" onSubmit={handleSearchSubmit}>
               <div className="row w-100">
                 <div className="col-8 col-md-10">
                   <input
                     className="form-control w-100"
                     type="search"
-                    placeholder="Search"
+                    placeholder="Search by Product Name"
                     aria-label="Search"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
                   />
                 </div>
                 <div className="col-4 col-md-2">
@@ -98,13 +120,21 @@ const Products: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {products.map((product) => (
-                  <ProductComponent
-                    key={product._id}
-                    product={product}
-                    handleDelete={handleDelete}
-                  />
-                ))}
+                {Array.isArray(products) && products.length > 0 ? (
+                  products.map((product) => (
+                    <ProductComponent
+                      key={product._id}
+                      product={product}
+                      handleDelete={handleDelete}
+                    />
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={6} className="text-center">
+                      No products found.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

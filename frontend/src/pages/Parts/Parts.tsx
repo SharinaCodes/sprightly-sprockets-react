@@ -1,10 +1,10 @@
-import { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { FaPlusSquare } from "react-icons/fa";
 import PartComponent from "./Part";
 import { RootState, AppDispatch } from "../../app/store";
-import { getParts, deletePart, reset } from "../../features/parts/partSlice";
+import { getParts, deletePart, lookupPartByName, reset } from "../../features/parts/partSlice";
 import Spinner from "../../components/Spinner";
 import { toast } from "react-toastify";
 
@@ -14,9 +14,12 @@ const Parts: React.FC = () => {
     (state: RootState) => state.part
   );
 
-  const { user } = useSelector((state: RootState) => state.auth); // Fetch user state with proper typing
+  const { user } = useSelector((state: RootState) => state.auth); // Fetch user state
 
   const dispatch = useDispatch<AppDispatch>();
+
+  // State to store the search query
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
     if (isError) {
@@ -30,9 +33,20 @@ const Parts: React.FC = () => {
     };
   }, [dispatch, isError, message]);
 
+  // Fetch parts or perform search based on the search query
   useEffect(() => {
-    dispatch(getParts());
-  }, [dispatch]);
+    if (!searchQuery.trim()) {
+      dispatch(getParts()); // Fetch all parts if search query is empty
+    }
+  }, [dispatch, searchQuery]);
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      dispatch(lookupPartByName(searchQuery)); // Dispatch search action if query is not empty
+    } else {
+      dispatch(getParts()); // Fetch all parts if search query is empty
+    }
+  };
 
   if (isLoading) {
     return <Spinner />;
@@ -58,7 +72,13 @@ const Parts: React.FC = () => {
           </button>
           <h2 className="mb-4">Parts</h2>
           <nav className="navbar navbar-light bg-light">
-            <form className="form-inline w-100">
+            <form
+              className="form-inline w-100"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSearch(); // Trigger search when button is clicked
+              }}
+            >
               <div className="row w-100">
                 <div className="col-8 col-md-10">
                   <input
@@ -66,6 +86,8 @@ const Parts: React.FC = () => {
                     type="search"
                     placeholder="Search"
                     aria-label="Search"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)} // Update search query as user types
                   />
                 </div>
                 <div className="col-4 col-md-2">

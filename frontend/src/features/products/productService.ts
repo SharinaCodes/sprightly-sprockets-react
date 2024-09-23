@@ -104,6 +104,27 @@ const lookupProductById = async (
   }
 };
 
+// Lookup product by name (partial, case-insensitive match)
+const lookupProductByName = async (
+  name: string,
+  token: string
+): Promise<ProductInterface[]> => {
+  try {
+    const response = await axios.get<ProductInterface[]>(
+      `${API_URL}name/${name}`,
+      getConfig(token)
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Failed to search product by name:", error);
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to search product"
+    );
+  }
+};
+
 // Delete product by ID
 const deleteProduct = async (
   productId: string,
@@ -124,6 +145,7 @@ const productService = {
   getProducts,
   updateProduct,
   lookupProductById,
+  lookupProductByName, // New method added
   deleteProduct,
 };
 

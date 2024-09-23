@@ -20,7 +20,7 @@ const initialState: PartState = {
   isError: false,
   isSuccess: false,
   message: "",
-  part: null
+  part: null,
 };
 
 // Async thunk for creating a part
@@ -29,7 +29,8 @@ export const createPart = createAsyncThunk(
   async (partData: PartInterface, thunkAPI) => {
     try {
       const token = (thunkAPI.getState() as RootState).auth.user?.token;
-      return await partService.createPart(partData, token!); // Ensure token is non-null
+      if (!token) throw new Error("Authorization token missing.");
+      return await partService.createPart(partData, token); // Ensure token is non-null
     } catch (error: any) {
       const message =
         (error.response &&
@@ -49,7 +50,9 @@ export const getParts = createAsyncThunk<
   { state: RootState }
 >("parts/getAll", async (_, thunkAPI) => {
   try {
-    return await partService.getParts();
+    const token = (thunkAPI.getState() as RootState).auth.user?.token;
+    if (!token) throw new Error("Authorization token missing.");
+    return await partService.getParts(token);
   } catch (error: any) {
     const message =
       (error.response && error.response.data && error.response.data.message) ||
@@ -59,13 +62,14 @@ export const getParts = createAsyncThunk<
   }
 });
 
-//edit part
+// Edit part
 export const updatePart = createAsyncThunk(
   "parts/update",
   async (partData: PartInterface, thunkAPI) => {
     try {
       const token = (thunkAPI.getState() as RootState).auth.user?.token;
-      return await partService.updatePart(partData, token!); // Ensure token is non-null
+      if (!token) throw new Error("Authorization token missing.");
+      return await partService.updatePart(partData, token);
     } catch (error: any) {
       const message =
         (error.response &&
@@ -83,7 +87,9 @@ export const lookupPartById = createAsyncThunk<PartInterface, string, { state: R
   "parts/lookupById",
   async (partId, thunkAPI) => {
     try {
-      return await partService.lookupPartById(partId);
+      const token = (thunkAPI.getState() as RootState).auth.user?.token;
+      if (!token) throw new Error("Authorization token missing.");
+      return await partService.lookupPartById(partId, token);
     } catch (error: any) {
       const message =
         (error.response && error.response.data && error.response.data.message) ||
@@ -99,7 +105,9 @@ export const lookupPartByName = createAsyncThunk<PartInterface[], string, { stat
   "parts/lookupByName",
   async (name, thunkAPI) => {
     try {
-      return await partService.lookupPartByName(name);
+      const token = (thunkAPI.getState() as RootState).auth.user?.token;
+      if (!token) throw new Error("Authorization token missing.");
+      return await partService.lookupPartByName(name, token);
     } catch (error: any) {
       const message =
         (error.response && error.response.data && error.response.data.message) ||
@@ -116,7 +124,8 @@ export const deletePart = createAsyncThunk<void, string, { state: RootState }>(
   async (partId, thunkAPI) => {
     try {
       const token = (thunkAPI.getState() as RootState).auth.user?.token;
-      return await partService.deletePart(partId, token!);
+      if (!token) throw new Error("Authorization token missing.");
+      return await partService.deletePart(partId, token);
     } catch (error: any) {
       const message =
         (error.response && error.response.data && error.response.data.message) ||
@@ -147,7 +156,7 @@ const partSlice = createSlice({
       .addCase(createPart.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.parts.push(action.payload as PartInterface);
+        state.parts.push(action.payload);
       })
       .addCase(createPart.rejected, (state, action) => {
         state.isLoading = false;
@@ -174,14 +183,13 @@ const partSlice = createSlice({
       .addCase(lookupPartById.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.part = action.payload; // Store the single part data in the state
+        state.part = action.payload;
       })
       .addCase(lookupPartById.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload as string;
       })
-
       // Lookup part by name
       .addCase(lookupPartByName.pending, (state) => {
         state.isLoading = true;
@@ -189,14 +197,13 @@ const partSlice = createSlice({
       .addCase(lookupPartByName.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.parts = action.payload; // Replace parts with the search results
+        state.parts = action.payload;
       })
       .addCase(lookupPartByName.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload as string;
       })
-
       // Delete part
       .addCase(deletePart.pending, (state) => {
         state.isLoading = true;
@@ -204,7 +211,6 @@ const partSlice = createSlice({
       .addCase(deletePart.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        // Optionally, remove the deleted part from state
         state.parts = state.parts.filter((part) => part._id !== action.meta.arg);
       })
       .addCase(deletePart.rejected, (state, action) => {
@@ -212,22 +218,16 @@ const partSlice = createSlice({
         state.isError = true;
         state.message = action.payload as string;
       })
-
+      // Update part
       .addCase(updatePart.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(updatePart.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-
-        // Find index of the updated part
-        const index = state.parts.findIndex(
-          (part) => part._id === action.payload._id
-        );
-
-        // If the part exists, update it
+        const index = state.parts.findIndex((part) => part._id === action.payload._id);
         if (index !== -1) {
-          state.parts[index] = action.payload as PartInterface;
+          state.parts[index] = action.payload;
         }
       })
       .addCase(updatePart.rejected, (state, action) => {
