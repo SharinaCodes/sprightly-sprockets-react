@@ -13,6 +13,7 @@ import AddProduct from "./pages/Products/AddProduct";
 import EditProduct from "./pages/Products/EditProduct";
 import PrivateRoute from "./components/PrivateRoute";
 import Reports from "./pages/Reports/Reports";
+import NotFoundComponent from "./components/NotFound"; // Import your NotFoundComponent
 
 const App: React.FC = () => {
   return (
@@ -41,6 +42,9 @@ const App: React.FC = () => {
           <Route path="/reports" element={<PrivateRoute />}>
             <Route path="/reports" element={<Reports />} />
           </Route>
+          
+          {/* Catch-all route for invalid URLs */}
+          <Route path="*" element={<NotFoundComponent />} />
         </Routes>
       </Router>
       <ToastContainer />
