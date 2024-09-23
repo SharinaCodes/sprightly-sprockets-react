@@ -1,3 +1,8 @@
+const asyncHandler = require("express-async-handler");
+const Part = require("../models/partModel");
+const Product = require("../models/productModel");
+const User = require ('../models/userModel');
+
 /**
  * Generates a report of parts with their creation and modification timestamps.
  * This report is accessed via the GET /api/reports/parts-timestamps route.
