@@ -27,7 +27,7 @@ const Login: React.FC = () => {
 
     if (isSuccess && user) {
       toast.success('Login successful');
-      navigate('/parts');
+      navigate('/');
     }
 
     dispatch(reset());

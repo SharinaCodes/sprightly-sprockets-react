@@ -1,5 +1,6 @@
 const Inventory = require("./Inventory");
 const Product = require("../models/productModel");
+const mongoose = require('mongoose');
 const asyncHandler = require("express-async-handler");
 
 class ProductInventory extends Inventory {

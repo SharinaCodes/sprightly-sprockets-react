@@ -63,7 +63,7 @@ const AddPart: React.FC = () => {
   useEffect(() => {
     if (isSuccess && formSubmitted) {
       toast.success("Part added successfully!");
-      navigate("/parts");  // Only navigate on success
+      navigate("/");  // Only navigate on success
       dispatch(reset());
     }
   

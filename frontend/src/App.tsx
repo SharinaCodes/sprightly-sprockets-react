@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Header from "./components/Header";
-import Parts from "./pages/Parts/Parts"; // Adjust the path as needed
+import Home from "./pages/Parts/Parts"; // Adjust the path as needed
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AddPart from "./pages/Parts/AddPart";
@@ -20,12 +20,9 @@ const App: React.FC = () => {
       <Router>
         <Header />
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />          
-          <Route path="/parts" element={<PrivateRoute />}>
-            <Route path="/parts" element={<Parts />} />
-          </Route>
+          <Route path="/register" element={<Register />} />
           <Route path="/add-part" element={<PrivateRoute />}>
             <Route path="/add-part" element={<AddPart />} />
           </Route>

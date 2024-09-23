@@ -54,7 +54,7 @@ const EditPart: React.FC = () => {
     if (isSuccess) {
       toast.success("Part updated successfully!");
       dispatch(reset()); // Reset the state after success
-      navigate("/parts"); // Navigate away after success
+      navigate("/"); // Navigate away after success
     }
 
     if (isError) {

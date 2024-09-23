@@ -30,7 +30,7 @@ const Register: React.FC = () => {
 
     if (isSuccess && user) {
       toast.success('Registration successful');
-      navigate('/parts');
+      navigate('/');
       
     }
 

@@ -1,5 +1,5 @@
 const express = require("express");
-const PartInventory = require("../controllers/PartInventory");
+const PartInventory = require("../controllers/partInventory");
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -7,13 +7,14 @@ const router = express.Router();
 // Instantiate PartInventory class
 const partInventory = new PartInventory();
 
-// Protect all routes
-router.use(protect);
+// Route for getting all parts (no token required)
+router.get("/", partInventory.getAllItems);
 
-// Routes for parts
-router.route("/").post(partInventory.addItem).get(partInventory.getAllItems);
-router.get("/id/:id", partInventory.lookupItemById);
-router.get("/name/:name", partInventory.lookupItemByName);
-router.route("/:id").put(partInventory.updateItem).delete(partInventory.deleteItem);
+// Protected routes (these require a token)
+router.post("/", protect, partInventory.addItem);  // Add part requires a token
+router.get("/id/:id", protect, partInventory.lookupItemById);  // Lookup by ID requires a token
+router.get("/name/:name", protect, partInventory.lookupItemByName);  // Lookup by name requires a token
+router.put("/:id", protect, partInventory.updateItem);  // Update requires a token
+router.delete("/:id", protect, partInventory.deleteItem);  // Delete requires a token
 
 module.exports = router;
