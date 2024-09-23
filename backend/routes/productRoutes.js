@@ -1,24 +1,19 @@
 const express = require("express");
-const router = express.Router();
-const {
-  addProduct,
-  getAllProducts,
-  lookupProductById,
-  lookupProductByName,
-  updateProduct,
-  deleteProduct,
-} = require("../controllers/productController");
+const ProductInventory = require("../controllers/productInventory");
 const { protect } = require("../middleware/authMiddleware");
 
-//protect routes
+const router = express.Router();
+
+// Instantiate ProductInventory class
+const productInventory = new ProductInventory();
+
+// Protect all routes
 router.use(protect);
 
-router.route("/").post(addProduct).get(getAllProducts);
-
-router.get("/id/:id", lookupProductById);
-
-router.get("/name/:name", lookupProductByName);
-
-router.route("/:id").put(updateProduct).delete(deleteProduct);
+// Routes for products
+router.route("/").post(productInventory.addItem).get(productInventory.getAllItems);
+router.get("/id/:id", productInventory.lookupItemById);
+router.get("/name/:name", productInventory.lookupItemByName);
+router.route("/:id").put(productInventory.updateItem).delete(productInventory.deleteItem);
 
 module.exports = router;

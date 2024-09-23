@@ -1,23 +1,19 @@
 const express = require("express");
-const router = express.Router();
-const {
-  addPart,
-  getAllParts,
-  lookupPartById,
-  lookupPartByName,
-  updatePart,
-  deletePart,
-} = require("../controllers/partController");
+const PartInventory = require("../controllers/PartInventory");
 const { protect } = require("../middleware/authMiddleware");
 
-// Route to get all parts (Not protected)
-router.get("/", getAllParts);
+const router = express.Router();
 
-// Protected routes
-router.post("/", protect, addPart);
-router.get("/id/:id", protect, lookupPartById);
-router.get("/name/:name", protect, lookupPartByName);
-router.put("/:id", protect, updatePart);
-router.delete("/:id", protect, deletePart);
+// Instantiate PartInventory class
+const partInventory = new PartInventory();
+
+// Protect all routes
+router.use(protect);
+
+// Routes for parts
+router.route("/").post(partInventory.addItem).get(partInventory.getAllItems);
+router.get("/id/:id", partInventory.lookupItemById);
+router.get("/name/:name", partInventory.lookupItemByName);
+router.route("/:id").put(partInventory.updateItem).delete(partInventory.deleteItem);
 
 module.exports = router;
