@@ -76,6 +76,11 @@ const AddProduct: React.FC = () => {
     }
   };
 
+  // Handle removing an associated part
+  const handleRemovePart = (partId: string) => {
+    setAssociatedParts(associatedParts.filter((part) => part._id !== partId));
+  };
+
   // Handle form submission for the product
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -208,8 +213,15 @@ const AddProduct: React.FC = () => {
               {associatedParts.length > 0 ? (
                 <ul className="list-group">
                   {associatedParts.map((part, index) => (
-                    <li key={index} className="list-group-item">
+                    <li key={part._id} className="list-group-item d-flex justify-content-between align-items-center">
                       {part.name} (Stock: {part.stock}, Price: {part.price})
+                      <button
+                        type="button"
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleRemovePart(part._id!)}
+                      >
+                        Remove
+                      </button>
                     </li>
                   ))}
                 </ul>

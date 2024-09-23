@@ -19,7 +19,7 @@ interface FormData {
 }
 
 const EditProduct: React.FC = () => {
-  const { productId } = useParams<{ productId: string }>(); // Use partId instead of id
+  const { productId } = useParams<{ productId: string }>();
   const [formData, setFormData] = useState<FormData>({
     name: "",
     price: "",
@@ -35,23 +35,19 @@ const EditProduct: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { parts, isLoading: partsLoading } = useSelector((state: RootState) => state.part);
-  const { product, isLoading, isSuccess, isError, message } = useSelector(
-    (state: RootState) => state.product
-  );
+  const { product, isLoading, isSuccess, isError, message } = useSelector((state: RootState) => state.product);
 
   // Fetch product details and parts on mount
   useEffect(() => {
-    dispatch(reset()); // Reset any previous state before mounting the form
-
+    dispatch(reset());
     if (productId) {
-      dispatch(lookupProductById(productId)); // Fetch the product using partId
+      dispatch(lookupProductById(productId)); // Fetch the product using productId
     }
     dispatch(getParts()); // Fetch all parts
   }, [dispatch, productId]);
 
   // Pre-fill form when product data is loaded
   useEffect(() => {
-    console.dir(product);
     if (product && product._id === productId) {
       setFormData({
         name: product.name,
@@ -60,36 +56,39 @@ const EditProduct: React.FC = () => {
         min: product.min.toString(),
         max: product.max.toString(),
       });
-  
-      // Convert AssociatedPartForAPI[] to PartInterface[] safely
+
+      // Avoid duplicating parts by creating a Set for unique IDs
+      const uniquePartIds = new Set<string>();
+
       const associatedPartsAsParts: PartInterface[] = product.associatedParts.map((associatedPart) => {
-        // Check if it's an AssociatedPartForAPI
         if ('partId' in associatedPart) {
-          // Find the matching part by partId
           const matchingPart = parts.find((part) => part._id === associatedPart.partId);
-  
-          return matchingPart
-            ? matchingPart
-            : {
-                _id: associatedPart.partId, // Fallback to partId
-                name: associatedPart.name, // Fallback to name from AssociatedPartForAPI
-                price: 0, // Default value for price
-                stock: 0, // Default value for stock
-                min: 0, // Default value for min
-                max: 0, // Default value for max
-                type: "Unknown" as "InHouse" | "Outsourced", // Handle unknown type
-              };
+          if (matchingPart && !uniquePartIds.has(matchingPart._id!)) {
+            uniquePartIds.add(matchingPart._id!);
+            return matchingPart;
+          }
+          return {
+            _id: associatedPart.partId,
+            name: associatedPart.name,
+            price: 0,
+            stock: 0,
+            min: 0,
+            max: 0,
+            type: "Unknown" as "InHouse" | "Outsourced",
+          };
         } else {
-          // It's already a PartInterface
-          return associatedPart as PartInterface;
+          const part = associatedPart as PartInterface;
+          if (!uniquePartIds.has(part._id!)) {
+            uniquePartIds.add(part._id!);
+            return part;
+          }
+          return null; // Ignore duplicate entries
         }
-      });
-  
+      }).filter(Boolean) as PartInterface[];
+
       setAssociatedParts(associatedPartsAsParts);
     }
   }, [product, productId, parts]);
-  
-
 
   // Handle success/error state after product update
   useEffect(() => {
@@ -121,21 +120,26 @@ const EditProduct: React.FC = () => {
     }
   };
 
+  // Handle removing an associated part
+  const handleRemovePart = (partId: string) => {
+    setAssociatedParts(associatedParts.filter((part) => part._id !== partId));
+  };
+
   // Handle form submission for the product update
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormSubmitted(true); // Set form submission flag
-  
+
     try {
       // Map associatedParts to only include partId and name
-      const associatedPartsForAPI: AssociatedPartForAPI[] = associatedParts.map(part => ({
+      const associatedPartsForAPI: AssociatedPartForAPI[] = associatedParts.map((part) => ({
         partId: part._id as string, // Ensure the part ID is used
         name: part.name,
       }));
-  
+
       // Create the updated product object
       const updatedProduct: ProductInterface = {
-        _id: productId, // Use productId when updating the product
+        _id: productId,
         name: formData.name,
         price: parseFloat(formData.price),
         stock: parseInt(formData.stock),
@@ -143,15 +147,12 @@ const EditProduct: React.FC = () => {
         max: parseInt(formData.max),
         associatedParts: associatedPartsForAPI, // Pass only partId and name
       };
-  
-      console.log('Updating product with data:', updatedProduct);
-  
+
       dispatch(updateProduct(updatedProduct));
     } catch (error) {
       console.error("Failed to update product:", error);
     }
   };
-  
 
   // Display spinner while loading product or parts
   if (isLoading || partsLoading) {
@@ -234,10 +235,7 @@ const EditProduct: React.FC = () => {
                 >
                   <option value="">Select a Part</option>
                   {parts
-                    .filter(
-                      (part) =>
-                        !associatedParts.some((ap) => ap._id === part._id)
-                    )
+                    .filter((part) => !associatedParts.some((ap) => ap._id === part._id))
                     .map((part) => (
                       <option key={part._id} value={part._id}>
                         {part.name} (Stock: {part.stock}, Price: {part.price})
@@ -258,9 +256,16 @@ const EditProduct: React.FC = () => {
               <h3 className="mt-4">Associated Parts</h3>
               {associatedParts.length > 0 ? (
                 <ul className="list-group">
-                  {associatedParts.map((part, index) => (
-                    <li key={index} className="list-group-item">
+                  {associatedParts.map((part) => (
+                    <li key={part._id} className="list-group-item d-flex justify-content-between align-items-center">
                       {part.name}
+                      <button
+                        type="button"
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleRemovePart(part._id!)}
+                      >
+                        Remove
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -268,11 +273,7 @@ const EditProduct: React.FC = () => {
                 <p>No associated parts added yet.</p>
               )}
 
-              <input
-                type="submit"
-                className="btn btn-info btn-block mt-4"
-                value="Update Product"
-              />
+              <input type="submit" className="btn btn-info btn-block mt-4" value="Update Product" />
             </form>
           </div>
         </div>
