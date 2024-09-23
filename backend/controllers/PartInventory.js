@@ -3,14 +3,27 @@ const Part = require("../models/partModel");
 const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
 
+/**
+ * PartInventory class that extends the Inventory class to handle specific logic for Parts.
+ */
 class PartInventory extends Inventory {
+  /**
+   * Initializes the PartInventory by passing the Part model to the parent Inventory class.
+   */
   constructor() {
-    super(Part); // Pass the Part model to the Inventory parent class
+    super(Part);
   }
 
-  // Override addItem to handle specific logic for Parts (e.g., InHouse vs. Outsourced)
+  /**
+   * Adds a new part to the inventory with specific handling for InHouse and Outsourced parts.
+   *
+   * @param {Object} req - The request object containing part data in the body.
+   * @param {Object} res - The response object used to return the result or errors.
+   * @returns {Promise<void>} - Returns a JSON object of the created part or an error message.
+   */
   addItem = asyncHandler(async (req, res) => {
-    const { name, price, stock, min, max, type, machineId, companyName } = req.body;
+    const { name, price, stock, min, max, type, machineId, companyName } =
+      req.body;
 
     try {
       // Create a new part with conditional handling for machineId and companyName
@@ -26,16 +39,24 @@ class PartInventory extends Inventory {
       });
 
       const createdPart = await part.save();
-      res.status(201).json(createdPart); // Return the created part
+      res.status(201).json(createdPart);
     } catch (error) {
       this.handleValidationError(error, res, "Unable to add new part.");
     }
   });
 
-  // Override updateItem to handle specific logic for Parts
+  /**
+   * Updates an existing part by its ID with specific logic for InHouse and Outsourced parts.
+   *
+   * @param {Object} req - The request object containing the ID in the URL parameters and update data in the body.
+   * @param {Object} res - The response object used to return the updated part or errors.
+   * @returns {Promise<void>} - Returns a JSON object of the updated part or an error message.
+   * @throws {Error} If the ID format is invalid or the part is not found.
+   */
   updateItem = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { name, price, stock, min, max, type, machineId, companyName } = req.body;
+    const { name, price, stock, min, max, type, machineId, companyName } =
+      req.body;
 
     try {
       // Check if the ID is a valid ObjectId

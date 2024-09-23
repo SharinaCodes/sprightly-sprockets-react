@@ -1,12 +1,19 @@
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
 const User = require("../models/userModel");
 
-// @desc Register a new user
-// @route /api/users
-// @access public
+/**
+ * Registers a new user.
+ * This function handles the registration process, including validating the input, 
+ * checking for an existing user, hashing the password, and creating the user in the database.
+ * Route: POST /api/users
+ * Access: Public
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Returns a JSON object with the new user details and a JWT token.
+ * @throws {Error} - Throws an error if required fields are missing or the user already exists.
+ */
 const registerUser = asyncHandler(async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
 
@@ -50,9 +57,17 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc Login a user
-// @route /api/users/login
-// @access public
+/**
+ * Logs in a user.
+ * This function checks if the user exists and if the password is correct, 
+ * then returns a JWT token for authentication.
+ * Route: POST /api/users/login
+ * Access: Public
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Returns a JSON object with the user's details and a JWT token.
+ * @throws {Error} - Throws an error if the credentials are invalid.
+ */
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -78,9 +93,15 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc Get curret user
-// @route /api/users/profile
-// @access private
+/**
+ * Retrieves the current user's profile.
+ * This function returns the authenticated user's details (without the password).
+ * Route: GET /api/users/profile
+ * Access: Private
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Returns a JSON object with the current user's details.
+ */
 const getProfile = asyncHandler(async (req, res) => {
   const user = req.user;
 
@@ -92,7 +113,12 @@ const getProfile = asyncHandler(async (req, res) => {
   });
 });
 
-// Generate token
+/**
+ * Generates a JWT token for a user.
+ * This helper function creates a token that expires in 30 days.
+ * @param {string} userId - The user's ID.
+ * @returns {string} - The generated JWT token.
+ */
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
     expiresIn: "30d",
