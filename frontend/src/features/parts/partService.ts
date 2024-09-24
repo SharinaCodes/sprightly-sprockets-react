@@ -1,10 +1,15 @@
 import axios from "axios";
-import { PartInterface } from '../../features/inventory/Part'; // Import PartInterface
+import { PartInterface } from "../../features/inventory/Part"; // Import PartInterface
 
-const API_URL = process.env.REACT_APP_API_URL? `${process.env.REACT_APP_URL}/parts/` : "http://localhost:5000/api/parts/";
+const API_URL = process.env.REACT_APP_API_URL
+  ? `${process.env.REACT_APP_URL}parts/`
+  : "http://localhost:5000/api/parts/";
 
 // Create part
-const createPart = async (partData: PartInterface, token: string): Promise<PartInterface> => {
+const createPart = async (
+  partData: PartInterface,
+  token: string
+): Promise<PartInterface> => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`, // Send token in Authorization header
@@ -16,24 +21,30 @@ const createPart = async (partData: PartInterface, token: string): Promise<PartI
     return response.data;
   } catch (error: any) {
     console.error("Failed to create part:", error);
-    throw new Error(error.response?.data?.message || error.message || "Failed to create part");
+    throw new Error(
+      error.response?.data?.message || error.message || "Failed to create part"
+    );
   }
 };
 
 // Get all parts
 const getParts = async (): Promise<PartInterface[]> => {
-
   try {
     const response = await axios.get<PartInterface[]>(API_URL); // Explicitly type the response
     return response.data;
   } catch (error: any) {
     console.error("Unable to get parts:", error);
-    throw new Error(error.response?.data?.message || error.message || "Unable to get parts");
+    throw new Error(
+      error.response?.data?.message || error.message || "Unable to get parts"
+    );
   }
 };
 
 // Update part
-const updatePart = async (partData: PartInterface, token: string): Promise<PartInterface> => {
+const updatePart = async (
+  partData: PartInterface,
+  token: string
+): Promise<PartInterface> => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -59,16 +70,25 @@ const updatePart = async (partData: PartInterface, token: string): Promise<PartI
   };
 
   try {
-    const response = await axios.put<PartInterface>(`${API_URL}${partId}`, updatePayload, config); // Properly set the URL and payload
+    const response = await axios.put<PartInterface>(
+      `${API_URL}${partId}`,
+      updatePayload,
+      config
+    ); // Properly set the URL and payload
     return response.data;
   } catch (error: any) {
     console.error("Failed to update part:", error);
-    throw new Error(error.response?.data?.message || error.message || "Failed to update part");
+    throw new Error(
+      error.response?.data?.message || error.message || "Failed to update part"
+    );
   }
 };
 
 // Lookup part by ID
-const lookupPartById = async (partId: string, token: string): Promise<PartInterface> => {
+const lookupPartById = async (
+  partId: string,
+  token: string
+): Promise<PartInterface> => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`, // Send token in Authorization header
@@ -76,15 +96,25 @@ const lookupPartById = async (partId: string, token: string): Promise<PartInterf
   };
 
   try {
-    const response = await axios.get<PartInterface>(`${API_URL}id/${partId}`, config);
+    const response = await axios.get<PartInterface>(
+      `${API_URL}id/${partId}`,
+      config
+    );
     return response.data;
   } catch (error: any) {
-    throw new Error(error.response?.data?.message || error.message || "Failed to retrieve part");
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to retrieve part"
+    );
   }
 };
 
 // Lookup part by name (case-insensitive, partial match)
-const lookupPartByName = async (name: string, token: string): Promise<PartInterface[]> => {
+const lookupPartByName = async (
+  name: string,
+  token: string
+): Promise<PartInterface[]> => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`, // Send token in Authorization header
@@ -92,11 +122,16 @@ const lookupPartByName = async (name: string, token: string): Promise<PartInterf
   };
 
   try {
-    const response = await axios.get<PartInterface[]>(`${API_URL}name/${name}`, config);
+    const response = await axios.get<PartInterface[]>(
+      `${API_URL}name/${name}`,
+      config
+    );
     return response.data;
   } catch (error: any) {
     console.error("Failed to search part by name:", error);
-    throw new Error(error.response?.data?.message || error.message || "Failed to search part");
+    throw new Error(
+      error.response?.data?.message || error.message || "Failed to search part"
+    );
   }
 };
 
@@ -112,7 +147,9 @@ const deletePart = async (partId: string, token: string): Promise<void> => {
     await axios.delete(`${API_URL}${partId}`, config); // Use the partId in the URL to delete the part
   } catch (error: any) {
     console.error("Failed to delete part:", error);
-    throw new Error(error.response?.data?.message || error.message || "Failed to delete part");
+    throw new Error(
+      error.response?.data?.message || error.message || "Failed to delete part"
+    );
   }
 };
 

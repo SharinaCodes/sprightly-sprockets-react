@@ -1,7 +1,9 @@
 import axios from "axios";
 
 // Define the base API URL for reports
-const API_URL = process.env.REACT_APP_API_URL ? `${process.env.REACT_APP_URL}/reports/` : "http://localhost:5000/api/reports/";
+const API_URL = process.env.REACT_APP_API_URL
+  ? `${process.env.REACT_APP_URL}reports/`
+  : "http://localhost:5000/api/reports/";
 
 // Helper function to generate config with Authorization header
 const getConfig = (token: string) => ({
@@ -13,12 +15,17 @@ const getConfig = (token: string) => ({
 // Fetch Parts Creation/Modification Report
 const getPartsTimestampReport = async (token: string) => {
   try {
-    const response = await axios.get(`${API_URL}parts-timestamp`, getConfig(token));
+    const response = await axios.get(
+      `${API_URL}parts-timestamp`,
+      getConfig(token)
+    );
     return response.data;
   } catch (error: any) {
     console.error("Error fetching Parts Timestamp Report:", error);
     throw new Error(
-      error.response?.data?.message || error.message || "Failed to fetch Parts Timestamp Report"
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch Parts Timestamp Report"
     );
   }
 };
@@ -26,12 +33,17 @@ const getPartsTimestampReport = async (token: string) => {
 // Fetch Products Creation/Modification Report
 const getProductsTimestampReport = async (token: string) => {
   try {
-    const response = await axios.get(`${API_URL}products-timestamp`, getConfig(token));
+    const response = await axios.get(
+      `${API_URL}products-timestamp`,
+      getConfig(token)
+    );
     return response.data;
   } catch (error: any) {
     console.error("Error fetching Products Timestamp Report:", error);
     throw new Error(
-      error.response?.data?.message || error.message || "Failed to fetch Products Timestamp Report"
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch Products Timestamp Report"
     );
   }
 };
@@ -39,12 +51,17 @@ const getProductsTimestampReport = async (token: string) => {
 // Fetch Users Creation/Modification Report
 const getUsersTimestampReport = async (token: string) => {
   try {
-    const response = await axios.get(`${API_URL}users-timestamps`, getConfig(token));
+    const response = await axios.get(
+      `${API_URL}users-timestamps`,
+      getConfig(token)
+    );
     return response.data;
   } catch (error: any) {
     console.error("Error fetching Users Timestamp Report:", error);
     throw new Error(
-      error.response?.data?.message || error.message || "Failed to fetch Users Timestamp Report"
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch Users Timestamp Report"
     );
   }
 };

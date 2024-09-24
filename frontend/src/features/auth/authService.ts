@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const API_URL =  process.env.REACT_APP_API_URL? `${process.env.REACT_APP_API_URL}/users/` : 'http://localhost:5000/api/users/';
+const API_URL = process.env.REACT_APP_API_URL
+  ? `${process.env.REACT_APP_API_URL}users/`
+  : "http://localhost:5000/api/users/";
 console.log(API_URL);
 
 // Define the interface for user registration data

@@ -2,7 +2,9 @@ import axios from "axios";
 import { ProductInterface } from "../inventory/Product";
 
 // Full backend API URL
-const API_URL = process.env.REACT_APP_API_URL ? `${process.env.REACT_APP_API_URL}/products/`:"http://localhost:5000/api/products/";
+const API_URL = process.env.REACT_APP_API_URL
+  ? `${process.env.REACT_APP_API_URL}products/`
+  : "http://localhost:5000/api/products/";
 
 // Helper function to generate config with Authorization header
 const getConfig = (token: string) => ({
@@ -36,7 +38,10 @@ const createProduct = async (
 // Get all products
 const getProducts = async (token: string): Promise<ProductInterface[]> => {
   try {
-    const response = await axios.get<ProductInterface[]>(API_URL, getConfig(token));
+    const response = await axios.get<ProductInterface[]>(
+      API_URL,
+      getConfig(token)
+    );
     return response.data;
   } catch (error: any) {
     console.error("Unable to get products:", error);
@@ -135,7 +140,9 @@ const deleteProduct = async (
   } catch (error: any) {
     console.error("Failed to delete product:", error);
     throw new Error(
-      error.response?.data?.message || error.message || "Failed to delete product"
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to delete product"
     );
   }
 };
