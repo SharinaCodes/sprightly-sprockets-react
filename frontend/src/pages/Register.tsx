@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { registerUser, reset } from '../features/auth/authSlice';
 import Spinner from '../components/Spinner';
 import { RootState, AppDispatch } from '../app/store';
+
+// Email and Password validation patterns
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -31,7 +35,6 @@ const Register: React.FC = () => {
     if (isSuccess && user) {
       toast.success('Registration successful');
       navigate('/');
-      
     }
 
     dispatch(reset());
@@ -47,12 +50,27 @@ const Register: React.FC = () => {
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate email
+    if (!emailRegex.test(email)) {
+      toast.error("Invalid email format. Please enter a valid email.");
+      return;
+    }
+
+    // Validate password
+    if (!passwordRegex.test(password)) {
+      toast.error("Password must be at least 8 characters long, include a letter, a number, and a special character.");
+      return;
+    }
+
+    // Check if passwords match
     if (password !== password2) {
       toast.error("Passwords do not match");
-    } else {
-      const userData = { firstName, lastName, email, password };
-      dispatch(registerUser(userData));
+      return;
     }
+
+    // If all validations pass, register the user
+    const userData = { firstName, lastName, email, password };
+    dispatch(registerUser(userData));
   };
 
   if (isLoading) {

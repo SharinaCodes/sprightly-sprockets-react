@@ -50,9 +50,7 @@ export const getParts = createAsyncThunk<
   { state: RootState }
 >("parts/getAll", async (_, thunkAPI) => {
   try {
-    const token = (thunkAPI.getState() as RootState).auth.user?.token;
-    if (!token) throw new Error("Authorization token missing.");
-    return await partService.getParts(token);
+    return await partService.getParts();
   } catch (error: any) {
     const message =
       (error.response && error.response.data && error.response.data.message) ||

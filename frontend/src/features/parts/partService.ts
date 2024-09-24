@@ -21,15 +21,10 @@ const createPart = async (partData: PartInterface, token: string): Promise<PartI
 };
 
 // Get all parts
-const getParts = async (token: string): Promise<PartInterface[]> => {
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`, // Send token in Authorization header
-    },
-  };
+const getParts = async (): Promise<PartInterface[]> => {
 
   try {
-    const response = await axios.get<PartInterface[]>(API_URL, config); // Explicitly type the response
+    const response = await axios.get<PartInterface[]>(API_URL); // Explicitly type the response
     return response.data;
   } catch (error: any) {
     console.error("Unable to get parts:", error);
