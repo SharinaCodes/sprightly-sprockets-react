@@ -106,33 +106,38 @@ const Parts: React.FC = () => {
             </nav>
           )}
 
-          <div className="table-responsive">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Price</th>
-                  <th>Stock</th>
-                  <th>Min</th>
-                  <th>Max</th>
-                  <th>Source</th>
-                  {user && <th className="text-center">Actions</th>}
-                </tr>
-              </thead>
-              <tbody>
-                {parts.map((part) =>
-                  part._id ? (
-                    <PartComponent
-                      key={part._id}
-                      part={part}
-                      handleDelete={handleDelete}
-                      user={user ?? undefined} // Pass user as a prop with proper typing
-                    />
-                  ) : null
-                )}
-              </tbody>
-            </table>
-          </div>
+          {/* Check if there are any parts */}
+          {parts.length === 0 ? (
+            <p className="lead">Add Parts to get started</p> // Render this paragraph when there are no parts
+          ) : (
+            <div className="table-responsive">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Min</th>
+                    <th>Max</th>
+                    <th>Source</th>
+                    {user && <th className="text-center">Actions</th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {parts.map((part) =>
+                    part._id ? (
+                      <PartComponent
+                        key={part._id}
+                        part={part}
+                        handleDelete={handleDelete}
+                        user={user ?? undefined} // Pass user as a prop with proper typing
+                      />
+                    ) : null
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </div>

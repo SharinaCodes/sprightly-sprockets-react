@@ -82,6 +82,8 @@ const Products: React.FC = () => {
             </Link>
           </button>
           <h2 className="mb-4">Products</h2>
+
+          {/* Conditionally render the search bar */}
           <nav className="navbar navbar-light bg-light">
             <form className="form-inline w-100" onSubmit={handleSearchSubmit}>
               <div className="row w-100">
@@ -106,38 +108,43 @@ const Products: React.FC = () => {
               </div>
             </form>
           </nav>
-          {/* Wrapping table with table-responsive class */}
-          <div className="table-responsive">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Price</th>
-                  <th>Stock</th>
-                  <th>Min</th>
-                  <th>Max</th>
-                  <th className="text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.isArray(products) && products.length > 0 ? (
-                  products.map((product) => (
-                    <ProductComponent
-                      key={product._id}
-                      product={product}
-                      handleDelete={handleDelete}
-                    />
-                  ))
-                ) : (
+
+          {/* Display a message if there are no products */}
+          {products.length === 0 ? (
+            <p className="lead">Add Products to get started</p> // Display this paragraph when there are no products
+          ) : (
+            <div className="table-responsive">
+              <table className="table">
+                <thead>
                   <tr>
-                    <td colSpan={6} className="text-center">
-                      No products found.
-                    </td>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Min</th>
+                    <th>Max</th>
+                    <th className="text-center">Actions</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {Array.isArray(products) && products.length > 0 ? (
+                    products.map((product) => (
+                      <ProductComponent
+                        key={product._id}
+                        product={product}
+                        handleDelete={handleDelete}
+                      />
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={6} className="text-center">
+                        No products found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </div>
