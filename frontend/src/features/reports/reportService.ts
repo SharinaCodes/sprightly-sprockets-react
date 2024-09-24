@@ -4,7 +4,6 @@ import axios from "axios";
 const API_URL = process.env.REACT_APP_API_URL
   ? `${process.env.REACT_APP_API_URL}reports/`
   : "http://localhost:5000/api/reports/";
-console.log(API_URL);
 
 // Helper function to generate config with Authorization header
 const getConfig = (token: string) => ({
