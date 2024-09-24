@@ -1,5 +1,5 @@
 const express = require("express");
-const ProductInventory = require("../controllers/productInventory");
+const ProductInventory = require("../controllers/ProductInventory");
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();

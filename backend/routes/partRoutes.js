@@ -1,5 +1,5 @@
 const express = require("express");
-const PartInventory = require("../controllers/partInventory");
+const PartInventory = require("../controllers/PartInventory");
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();

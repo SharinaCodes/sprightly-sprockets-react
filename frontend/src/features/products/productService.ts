@@ -2,7 +2,7 @@ import axios from "axios";
 import { ProductInterface } from "../inventory/Product";
 
 // Full backend API URL
-const API_URL = "http://localhost:5000/api/products/";
+const API_URL = process.env.REACT_APP_API_URL ? `${process.env.REACT_APP_API_URL}/products/`:"http://localhost:5000/api/products/";
 
 // Helper function to generate config with Authorization header
 const getConfig = (token: string) => ({
