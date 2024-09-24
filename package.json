@@ -7,7 +7,8 @@
     "start": "node backend/server.js",
     "server": "nodemon backend/server.js",
     "client": "npm start --prefix frontend",
-    "dev": "concurrently \"npm run server\" \"npm run client\" "
+    "dev": "concurrently \"npm run server\" \"npm run client\" ",
+    "test": "jest"
   },
   "author": "Sharina V. Jones",
   "license": "MIT",
@@ -24,6 +25,9 @@
     "react-redux": "^9.1.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4"
+    "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.0.1",
+    "nodemon": "^3.1.4",
+    "supertest": "^7.0.0"
   }
 }
