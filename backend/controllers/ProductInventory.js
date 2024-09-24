@@ -92,27 +92,35 @@ class ProductInventory extends Inventory {
    */
   deleteItem = asyncHandler(async (req, res) => {
     const { id } = req.params;
-
-    // Check if the ID is a valid ObjectId
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      res.status(400);
-      throw new Error("Invalid ID format");
-    }
-
-    const product = await Product.findById(id);
-    if (product) {
+  
+    try {
+      // Check if the ID is a valid ObjectId
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        res.status(400);
+        throw new Error("Invalid ID format");
+      }
+  
+      const product = await Product.findById(id);
+  
+      if (!product) {
+        res.status(404);
+        throw new Error("Product not found");
+      }
+  
       // Check if the product has associated parts
       if (product.associatedParts.length > 0) {
         throw new Error("Cannot delete a product with associated parts");
       }
-
+  
       await product.deleteOne(); // Delete the product
       res.status(200).json({ message: "Product removed" }); // Return the deletion message
-    } else {
-      res.status(404);
-      throw new Error("Product not found");
+  
+    } catch (error) {
+      // Catch any errors and pass them to the asyncHandler for proper error handling
+      res.status(400);
+      throw new Error(error.message || "An error occurred while attempting to delete the product.");
     }
   });
-}
+}  
 
 module.exports = ProductInventory;
