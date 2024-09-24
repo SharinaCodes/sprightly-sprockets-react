@@ -2,8 +2,9 @@ import axios from "axios";
 import { PartInterface } from "../../features/inventory/Part"; // Import PartInterface
 
 const API_URL = process.env.REACT_APP_API_URL
-  ? `${process.env.REACT_APP_URL}parts/`
+  ? `${process.env.REACT_APP_API_URL}parts/`
   : "http://localhost:5000/api/parts/";
+console.log(API_URL);
 
 // Create part
 const createPart = async (

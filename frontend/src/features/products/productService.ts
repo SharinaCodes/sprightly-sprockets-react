@@ -5,6 +5,7 @@ import { ProductInterface } from "../inventory/Product";
 const API_URL = process.env.REACT_APP_API_URL
   ? `${process.env.REACT_APP_API_URL}products/`
   : "http://localhost:5000/api/products/";
+console.log(API_URL);
 
 // Helper function to generate config with Authorization header
 const getConfig = (token: string) => ({
