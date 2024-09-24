@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../../app/store";
-import { fetchPartsTimestampReport, fetchProductsTimestampReport, fetchUsersTimestampReport, reset } from "../../features/reports/reportSlice";
+import {
+  fetchPartsTimestampReport,
+  fetchProductsTimestampReport,
+  fetchUsersTimestampReport,
+  reset,
+} from "../../features/reports/reportSlice";
 import Spinner from "../../components/Spinner";
 import { toast } from "react-toastify";
 
@@ -10,7 +15,14 @@ const Reports: React.FC = () => {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const { partsReport, productsReport, usersReport, isLoading, isError, message } = useSelector((state: RootState) => state.report);
+  const {
+    partsReport,
+    productsReport,
+    usersReport,
+    isLoading,
+    isError,
+    message,
+  } = useSelector((state: RootState) => state.report);
 
   // Handle errors
   useEffect(() => {
@@ -117,21 +129,27 @@ const Reports: React.FC = () => {
       <h1 className="text-center">Reports</h1>
 
       <div className="row mb-3">
-        <div className="col-md-12 text-center">
+        <div className="col-sm-12 text-center">
           <button
-            className={`btn btn-primary mr-2 ${reportType === "parts" ? "active" : ""}`}
+            className={`btn btn-primary mr-2 ${
+              reportType === "parts" ? "active" : ""
+            }`}
             onClick={() => setReportType("parts")}
           >
             Parts Report
           </button>
           <button
-            className={`btn btn-primary mr-2 ${reportType === "products" ? "active" : ""}`}
+            className={`btn btn-primary mr-2 ${
+              reportType === "products" ? "active" : ""
+            }`}
             onClick={() => setReportType("products")}
           >
             Products Report
           </button>
           <button
-            className={`btn btn-primary ${reportType === "users" ? "active" : ""}`}
+            className={`btn btn-primary ${
+              reportType === "users" ? "active" : ""
+            }`}
             onClick={() => setReportType("users")}
           >
             Users Report
