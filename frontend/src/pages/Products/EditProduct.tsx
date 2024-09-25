@@ -11,7 +11,6 @@ import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
 import NotFoundComponent from "../../components/NotFound"; // Import the NotFoundComponent
 
-// Define the interface for form data
 interface FormData {
   name: string;
   price: string;
@@ -20,6 +19,113 @@ interface FormData {
   max: string;
 }
 
+/**
+ * Component for editing an existing product.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <EditProduct />
+ * )
+ * 
+ * @returns {JSX.Element} The rendered component.
+ * 
+ * @remarks
+ * This component allows users to edit an existing product by filling out a form with product details and managing associated parts.
+ * It handles form submission, input changes, and dispatches actions to the Redux store for updating the product.
+ * 
+ * @function
+ * @name EditProduct
+ * 
+ * @description
+ * The `EditProduct` component manages the state for the product form, handles form submission, and interacts with the Redux store to dispatch actions for fetching the product, updating the product, and fetching associated parts.
+ * It also includes logic for checking the validity of the product ID.
+ * 
+ * @typedef {Object} FormData
+ * @property {string} name - The name of the product.
+ * @property {string} price - The price of the product.
+ * @property {string} stock - The stock quantity of the product.
+ * @property {string} min - The minimum stock quantity.
+ * @property {string} max - The maximum stock quantity.
+ * 
+ * @typedef {Object} PartInterface
+ * @property {string} _id - The unique identifier of the part.
+ * @property {string} name - The name of the part.
+ * @property {number} stock - The stock quantity of the part.
+ * @property {number} price - The price of the part.
+ * 
+ * @typedef {Object} AssociatedPartForAPI
+ * @property {string} partId - The unique identifier of the part.
+ * @property {string} name - The name of the part.
+ * 
+ * @typedef {Object} ProductInterface
+ * @property {string} _id - The unique identifier of the product.
+ * @property {string} name - The name of the product.
+ * @property {number} price - The price of the product.
+ * @property {number} stock - The stock quantity of the product.
+ * @property {number} min - The minimum stock quantity.
+ * @property {number} max - The maximum stock quantity.
+ * @property {AssociatedPartForAPI[]} associatedParts - The list of associated parts.
+ * 
+ * @hook
+ * @name useEffect
+ * @description
+ * - Fetches the product and associated parts on component mount.
+ * - Handles success and error states after product update.
+ * 
+ * @hook
+ * @name useState
+ * @description
+ * Manages the state for form data, associated parts, selected part ID, form submission flag, and the invalid product ID flag.
+ * 
+ * @hook
+ * @name useNavigate
+ * @description
+ * Provides navigation functionality to redirect users after form submission.
+ * 
+ * @hook
+ * @name useDispatch
+ * @description
+ * Provides dispatch functionality for Redux actions.
+ * 
+ * @hook
+ * @name useSelector
+ * @description
+ * Selects the part and product state from the Redux store.
+ * 
+ * @function
+ * @name handleProductChange
+ * @description
+ * Handles input changes for the product form fields.
+ * 
+ * @function
+ * @name handleAddPart
+ * @description
+ * Adds a part to the associated parts list if it hasn't been added already.
+ * 
+ * @function
+ * @name handleRemovePart
+ * @description
+ * Removes a part from the associated parts list.
+ * 
+ * @function
+ * @name onSubmit
+ * @description
+ * Handles form submission to update the product. It prepares the product object and associated parts for the API call.
+ * 
+ * @function
+ * @name Spinner
+ * @description
+ * Displays a loading spinner while product details and parts are being fetched.
+ * 
+ * @function
+ * @name NotFoundComponent
+ * @description
+ * Displays a "Not Found" component if the product ID is invalid or not found.
+ * 
+ * @param {React.ChangeEvent<HTMLInputElement>} e - The change event for form inputs.
+ * @param {React.FormEvent<HTMLFormElement>} e - The form submission event.
+ */
 const EditProduct: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
   const [formData, setFormData] = useState<FormData>({

@@ -8,6 +8,40 @@ import { getParts, deletePart, lookupPartByName, reset } from "../../features/pa
 import Spinner from "../../components/Spinner";
 import { toast } from "react-toastify";
 
+/**
+ * Parts component that displays a list of parts and provides functionality to search, add, and delete parts.
+ * 
+ * @component
+ * @returns {JSX.Element} The rendered component.
+ * 
+ * @description
+ * This component fetches parts from the Redux store and displays them in a table. It also provides a search bar
+ * for filtering parts by name. If the user is logged in, they can add new parts and delete existing ones.
+ * 
+ * @example
+ * <Parts />
+ * 
+ * @remarks
+ * - The component uses Redux for state management.
+ * - It displays a loading spinner while parts are being fetched.
+ * - It shows an error toast if there is an error fetching parts.
+ * - The search bar is only displayed if the user is logged in.
+ * - The component cleans up by resetting the state on unmount.
+ * 
+ * @hook
+ * - `useSelector` to fetch parts and user state from Redux.
+ * - `useDispatch` to dispatch actions to the Redux store.
+ * - `useState` to manage the search query state.
+ * - `useEffect` to handle side effects such as fetching parts and showing error toasts.
+ * 
+ * @function handleSearch
+ * Dispatches a search action if the search query is not empty, otherwise fetches all parts.
+ * 
+ * @function handleDelete
+ * Dispatches a delete action with the part ID.
+ * 
+ * @param {string | undefined} id - The ID of the part to delete.
+ */
 const Parts: React.FC = () => {
   // Fetch parts state from Redux
   const { parts, isLoading, isError, message } = useSelector(

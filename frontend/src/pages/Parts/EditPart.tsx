@@ -9,7 +9,18 @@ import NotFoundComponent from '../../components/NotFound'
 import { toast } from "react-toastify";
 import mongoose from "mongoose"; // Import mongoose to check ID validity
 
-// Define the interface for form state
+/**
+ * Interface representing the form data for editing a part.
+ * 
+ * @property {string} name - The name of the part.
+ * @property {string} price - The price of the part.
+ * @property {string} stock - The current stock level of the part.
+ * @property {string} min - The minimum stock level for the part.
+ * @property {string} max - The maximum stock level for the part.
+ * @property {"InHouse" | "Outsourced"} type - The type of the part, either "InHouse" or "Outsourced".
+ * @property {string} machineId - The machine ID associated with the part (if type is "InHouse").
+ * @property {string} companyName - The company name associated with the part (if type is "Outsourced").
+ */
 interface FormData {
   name: string;
   price: string;
@@ -21,6 +32,49 @@ interface FormData {
   companyName: string;
 }
 
+/**
+ * EditPart component allows users to edit an existing part in the inventory.
+ * 
+ * This component fetches the part details based on the part ID from the URL,
+ * validates the part ID, and populates the form with the part's current data.
+ * Users can update the part details and submit the form to save changes.
+ * 
+ * @component
+ * @returns {JSX.Element} The rendered component.
+ * 
+ * @example
+ * <EditPart />
+ * 
+ * @remarks
+ * - Uses `useParams` to get the part ID from the URL.
+ * - Uses `useSelector` to access parts data from the Redux store.
+ * - Uses `useDispatch` to dispatch actions to the Redux store.
+ * - Uses `useNavigate` to navigate programmatically.
+ * - Uses `useEffect` to fetch parts data and monitor Redux state changes.
+ * - Displays a loading spinner until the part data is fetched.
+ * - Displays a Not Found component if the part ID is invalid.
+ * 
+ * @requires
+ * - `useParams` from `react-router-dom`
+ * - `useSelector`, `useDispatch` from `react-redux`
+ * - `useNavigate` from `react-router-dom`
+ * - `useEffect`, `useState` from `react`
+ * - `mongoose` for ObjectId validation
+ * - `toast` from `react-toastify` for notifications
+ * - `getParts`, `updatePart`, `reset` actions from the Redux store
+ * - `RootState`, `AppDispatch` types from the Redux store
+ * - `NotFoundComponent`, `Spinner` components for UI feedback
+ * 
+ * @param {Object} props - The component props.
+ * @param {string} props.partId - The ID of the part to be edited.
+ * @param {FormData | null} props.formData - The form data for the part.
+ * @param {boolean} props.isInvalidId - Flag to indicate if the part ID is invalid.
+ * @param {boolean} props.isSuccess - Flag to indicate if the part update was successful.
+ * @param {boolean} props.isError - Flag to indicate if there was an error updating the part.
+ * @param {string} props.message - The error message if the part update failed.
+ * 
+ * @returns {JSX.Element} The rendered component.
+ */
 const EditPart: React.FC = () => {
   const { partId } = useParams<{ partId: string }>(); // Get the part ID from the URL
   const [formData, setFormData] = useState<FormData | null>(null); // Start with null formData
