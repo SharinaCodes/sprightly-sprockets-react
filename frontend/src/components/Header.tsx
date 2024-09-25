@@ -4,6 +4,24 @@ import { useSelector, useDispatch } from "react-redux";
 import { logoutUser, reset } from "../features/auth/authSlice";
 import { RootState, AppDispatch } from "../app/store";
 
+/**
+ * Header component that displays a navigation bar with links to different routes.
+ * 
+ * - If the user is logged in, it shows links to "Products", "Reports", and a "Logout" option.
+ * - If the user is not logged in, it shows links to "Login" and "Register".
+ * 
+ * @component
+ * @returns {JSX.Element} The rendered component.
+ * 
+ * @example
+ * <Header />
+ * 
+ * @remarks
+ * This component uses `useNavigate` from `react-router-dom` for navigation and `useDispatch` and `useSelector` from `react-redux` for state management.
+ * 
+ * @function
+ * @name Header
+ */
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();

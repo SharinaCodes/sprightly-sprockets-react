@@ -7,10 +7,15 @@ const { errorHandler } = require("./middleware/errorMiddlware");
 const connectDB = require("./config/db");
 const PORT = process.env.PORT || 5000;
 
+/**
+ * Server for Sprightly Sprocket API
+ */
+
 //connect to database
 connectDB();
 const app = express();
 
+//middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
@@ -24,18 +29,6 @@ app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/parts", require("./routes/partRoutes"));
 app.use("/api/products", require("./routes/productRoutes"));
 app.use("/api/reports", require("./routes/reportRoutes"));
-
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/build")));
-
-  app.get("*", (req, res) =>
-    res.sendFile(__dirname, "../", "frontend", "build", "index.html")
-  );
-} else {
-    app.get("/", (req, res) => {
-        res.status(200).json({ message: "Welcome to the Sprightly Sprocket API" });
-      });
-}
 
 //error handler
 app.use(errorHandler);

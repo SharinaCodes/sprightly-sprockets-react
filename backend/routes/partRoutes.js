@@ -1,8 +1,11 @@
 const express = require("express");
 const PartInventory = require("../controllers/PartInventory");
 const { protect } = require("../middleware/authMiddleware");
-
 const router = express.Router();
+
+/**
+ * Routes for parts
+ */
 
 // Instantiate PartInventory class
 const partInventory = new PartInventory();

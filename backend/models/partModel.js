@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const Product = require('./productModel');
 
+/**
+ * Part schema that defines the structure of parts in the database
+ */
 const partSchema = mongoose.Schema({
     name: {
         type: String,

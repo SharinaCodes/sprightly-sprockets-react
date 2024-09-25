@@ -23,6 +23,7 @@ interface AuthState {
 // Get user from localStorage if available
 const user: User | null = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null;
 
+// Define the initial state for auth
 const initialState: AuthState = {
   user: user,
   isError: false,
@@ -31,7 +32,19 @@ const initialState: AuthState = {
   message: '',
 };
 
-// Create the async thunk for registering a user
+
+/**
+ * Asynchronous thunk action for registering a new user.
+ *
+ * @param {Object} userData - The user data for registration.
+ * @param {string} userData.firstName - The first name of the user.
+ * @param {string} userData.lastName - The last name of the user.
+ * @param {string} userData.email - The email address of the user.
+ * @param {string} userData.password - The password for the user account.
+ * @param {Object} thunkAPI - The thunk API object.
+ * @returns {Promise<User>} The registered user data.
+ * @throws Will throw an error if registration fails.
+ */
 export const registerUser = createAsyncThunk(
   'auth/register',
   async (userData: { firstName: string; lastName: string; email: string; password: string }, thunkAPI) => {
@@ -48,7 +61,18 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-// Create the async thunk for logging in a user
+/**
+ * Asynchronous thunk action for logging in a user.
+ * 
+ * @param {Object} userData - The user data containing email and password.
+ * @param {string} userData.email - The email of the user.
+ * @param {string} userData.password - The password of the user.
+ * @param {Object} thunkAPI - The thunk API object.
+ * 
+ * @returns {Promise<User>} The logged-in user data.
+ * 
+ * @throws Will throw an error if the login fails.
+ */
 export const loginUser = createAsyncThunk(
   'auth/login',
   async (userData: { email: string; password: string }, thunkAPI) => {
@@ -65,7 +89,20 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// Create the async thunk for logging out a user
+/**
+ * Asynchronous thunk action to log out the current user.
+ * 
+ * This action calls the `authService.logout` method to log out the user.
+ * If the logout is successful, it returns `null` to indicate that no user is logged in.
+ * If an error occurs during the logout process, it rejects the action with a failure message.
+ * 
+ * @async
+ * @function logoutUser
+ * @param {Object} _ - Unused parameter.
+ * @param {Object} thunkAPI - The thunk API object provided by Redux Toolkit.
+ * @returns {Promise<null | string>} A promise that resolves to `null` if logout is successful, 
+ * or rejects with a failure message if an error occurs.
+ */
 export const logoutUser = createAsyncThunk('auth/logout', async (_, thunkAPI) => {
   try {
     await authService.logout();

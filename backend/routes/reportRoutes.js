@@ -7,6 +7,10 @@ const {
 } = require("../controllers/reportController");
 const {protect} = require('../middleware/authMiddleware');
 
+/**
+ * Routes for reports
+ */
+
 //protect all routes
 router.use(protect);
 

@@ -18,7 +18,15 @@ interface LoginUserData {
   password: string;
 }
 
-// Register user
+
+/**
+ * Registers a new user with the provided user data.
+ *
+ * @param {RegisterUserData} userData - The data of the user to register.
+ * @returns {Promise<any>} The response data from the registration request.
+ *
+ * @throws {Error} If the registration request fails.
+ */
 const register = async (userData: RegisterUserData) => {
   const response = await axios.post(API_URL, userData);
   if (response.data) {
@@ -28,7 +36,14 @@ const register = async (userData: RegisterUserData) => {
   return response.data;
 };
 
-// Login user
+/**
+ * Logs in a user with the provided user data.
+ *
+ * @param {LoginUserData} userData - The data of the user to log in.
+ * @returns {Promise<any>} The response data from the login request.
+ *
+ * @throws {Error} If the login request fails.
+ */
 const login = async (userData: LoginUserData) => {
   const response = await axios.post(API_URL + "login", userData);
   if (response.data) {
@@ -38,7 +53,9 @@ const login = async (userData: LoginUserData) => {
   return response.data;
 };
 
-//Logout user
+/**
+ * Logs out the current user by removing the user data from local storage.
+ */
 const logout = () => localStorage.removeItem("user");
 
 // Export the auth service

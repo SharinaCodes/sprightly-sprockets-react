@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 
-// Define the schema for parts associated with products
+/**
+ * Associated part schema that defines the structure of associated parts in the database
+ */
 const associatedPartSchema = mongoose.Schema(
   {
     partId: {
@@ -16,6 +18,9 @@ const associatedPartSchema = mongoose.Schema(
   { _id: false }
 );
 
+/**
+ * Product schema that defines the structure of products in the database
+ */
 const productSchema = mongoose.Schema(
   {
     name: {

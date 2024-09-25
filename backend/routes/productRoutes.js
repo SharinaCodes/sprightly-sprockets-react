@@ -4,6 +4,10 @@ const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+/**
+ * Routes for products
+ */
+
 // Instantiate ProductInventory class
 const productInventory = new ProductInventory();
 

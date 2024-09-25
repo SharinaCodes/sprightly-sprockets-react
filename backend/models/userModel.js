@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const { type } = require("os");
 
+/**
+ * User schema that defines the structure of users in the database
+ */
 const userSchema = mongoose.Schema(
   {
     firstName: {

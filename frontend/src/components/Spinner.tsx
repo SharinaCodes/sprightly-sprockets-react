@@ -1,3 +1,8 @@
+/**
+ * Spinner component that displays a loading spinner centered on the screen.
+ * 
+ * @returns A JSX element containing a Bootstrap spinner.
+ */
 const Spinner: React.FC = () => {
   return (
     <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>

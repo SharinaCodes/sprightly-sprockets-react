@@ -1,4 +1,9 @@
-// utils/errorHandler.js
+/**
+ * Handle validation errors
+ * @param {*} error The error object
+ * @param {*} res The response object
+ * @param {*} defaultMessage The default message
+ */
 const handleValidationError = (error, res, defaultMessage = "Validation failed") => {
     if (error.name === "ValidationError") {
       const messages = Object.values(error.errors).map((err) => err.message);
