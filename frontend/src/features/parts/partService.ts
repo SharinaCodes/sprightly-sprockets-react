@@ -5,7 +5,15 @@ const API_URL = process.env.REACT_APP_API_URL
   ? `${process.env.REACT_APP_API_URL}parts/`
   : "http://localhost:5000/api/parts/";
 
-// Create part
+
+/**
+ * Creates a new part by sending a POST request to the API.
+ *
+ * @param partData - The data of the part to be created.
+ * @param token - The authorization token for the request.
+ * @returns A promise that resolves to the created part.
+ * @throws Will throw an error if the part creation fails.
+ */
 const createPart = async (
   partData: PartInterface,
   token: string
@@ -27,7 +35,13 @@ const createPart = async (
   }
 };
 
-// Get all parts
+
+/**
+ * Fetches the list of parts from the API.
+ *
+ * @returns {Promise<PartInterface[]>} A promise that resolves to an array of parts.
+ * @throws Will throw an error if the request fails, with a message indicating the failure reason.
+ */
 const getParts = async (): Promise<PartInterface[]> => {
   try {
     const response = await axios.get<PartInterface[]>(API_URL); // Explicitly type the response
@@ -40,7 +54,15 @@ const getParts = async (): Promise<PartInterface[]> => {
   }
 };
 
-// Update part
+
+/**
+ * Updates an existing part with the provided data.
+ *
+ * @param {PartInterface} partData - The data of the part to be updated.
+ * @param {string} token - The authorization token for the request.
+ * @returns {Promise<PartInterface>} - A promise that resolves to the updated part data.
+ * @throws {Error} - Throws an error if the part ID is missing or if the update fails.
+ */
 const updatePart = async (
   partData: PartInterface,
   token: string
@@ -84,7 +106,15 @@ const updatePart = async (
   }
 };
 
-// Lookup part by ID
+
+/**
+ * Fetches a part by its ID from the API.
+ *
+ * @param partId - The ID of the part to retrieve.
+ * @param token - The authorization token to be included in the request headers.
+ * @returns A promise that resolves to the part data.
+ * @throws Will throw an error if the request fails, with a message indicating the failure reason.
+ */
 const lookupPartById = async (
   partId: string,
   token: string
@@ -110,7 +140,15 @@ const lookupPartById = async (
   }
 };
 
-// Lookup part by name (case-insensitive, partial match)
+
+/**
+ * Fetches parts by their name from the API.
+ *
+ * @param name - The name of the part to search for.
+ * @param token - The authorization token for the API request.
+ * @returns A promise that resolves to an array of parts matching the given name.
+ * @throws Will throw an error if the request fails.
+ */
 const lookupPartByName = async (
   name: string,
   token: string
@@ -135,7 +173,15 @@ const lookupPartByName = async (
   }
 };
 
-// Delete part by ID
+
+/**
+ * Deletes a part from the inventory.
+ *
+ * @param partId - The ID of the part to be deleted.
+ * @param token - The authorization token for the request.
+ * @returns A promise that resolves when the part is successfully deleted.
+ * @throws Will throw an error if the deletion fails.
+ */
 const deletePart = async (partId: string, token: string): Promise<void> => {
   const config = {
     headers: {

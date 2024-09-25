@@ -5,14 +5,25 @@ const API_URL = process.env.REACT_APP_API_URL
   ? `${process.env.REACT_APP_API_URL}reports/`
   : "http://localhost:5000/api/reports/";
 
-// Helper function to generate config with Authorization header
+/**
+ * Generates a configuration object for HTTP requests with an Authorization header.
+ *
+ * @param token - The token to be included in the Authorization header.
+ * @returns An object containing the headers with the Authorization token.
+ */
 const getConfig = (token: string) => ({
   headers: {
     Authorization: `Bearer ${token}`, // Send token in Authorization header
   },
 });
 
-// Fetch Parts Creation/Modification Report
+/**
+ * Fetches the Parts Timestamp Report from the API.
+ *
+ * @param {string} token - The authentication token to be included in the request headers.
+ * @returns {Promise<any>} - A promise that resolves to the data of the Parts Timestamp Report.
+ * @throws {Error} - Throws an error if the request fails, with a message indicating the failure reason.
+ */
 const getPartsTimestampReport = async (token: string) => {
   try {
     const response = await axios.get(
@@ -30,7 +41,13 @@ const getPartsTimestampReport = async (token: string) => {
   }
 };
 
-// Fetch Products Creation/Modification Report
+/**
+ * Fetches the Products Timestamp Report from the API.
+ *
+ * @param {string} token - The authentication token for the API request.
+ * @returns {Promise<any>} - A promise that resolves to the data of the Products Timestamp Report.
+ * @throws {Error} - Throws an error if the request fails, with a message indicating the failure reason.
+ */
 const getProductsTimestampReport = async (token: string) => {
   try {
     const response = await axios.get(
@@ -48,7 +65,13 @@ const getProductsTimestampReport = async (token: string) => {
   }
 };
 
-// Fetch Users Creation/Modification Report
+/**
+ * Fetches the Users Timestamp Report from the API.
+ *
+ * @param {string} token - The authentication token for the API request.
+ * @returns {Promise<any>} - A promise that resolves to the data of the Users Timestamp Report.
+ * @throws {Error} - Throws an error if the request fails, with a message indicating the failure reason.
+ */
 const getUsersTimestampReport = async (token: string) => {
   try {
     const response = await axios.get(

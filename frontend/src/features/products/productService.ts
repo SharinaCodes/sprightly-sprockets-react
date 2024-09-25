@@ -6,14 +6,27 @@ const API_URL = process.env.REACT_APP_API_URL
   ? `${process.env.REACT_APP_API_URL}products/`
   : "http://localhost:5000/api/products/";
 
-// Helper function to generate config with Authorization header
+
+/**
+ * Generates a configuration object for HTTP requests with an Authorization header.
+ *
+ * @param token - The JWT token to be included in the Authorization header.
+ * @returns An object containing the headers with the Authorization token.
+ */
 const getConfig = (token: string) => ({
   headers: {
     Authorization: `Bearer ${token}`, // Send token in Authorization header
   },
 });
 
-// Create product
+/**
+ * Creates a new product by sending a POST request to the API.
+ *
+ * @param {ProductInterface} productData - The data of the product to be created.
+ * @param {string} token - The authentication token for the request.
+ * @returns {Promise<ProductInterface>} - A promise that resolves to the created product data.
+ * @throws {Error} - Throws an error if the product creation fails.
+ */
 const createProduct = async (
   productData: ProductInterface,
   token: string
@@ -35,7 +48,13 @@ const createProduct = async (
   }
 };
 
-// Get all products
+/**
+ * Fetches the list of products from the API.
+ *
+ * @param {string} token - The authentication token for the API request.
+ * @returns {Promise<ProductInterface[]>} - A promise that resolves to an array of products.
+ * @throws {Error} - Throws an error if the request fails, with a message indicating the failure reason.
+ */
 const getProducts = async (token: string): Promise<ProductInterface[]> => {
   try {
     const response = await axios.get<ProductInterface[]>(
@@ -51,7 +70,14 @@ const getProducts = async (token: string): Promise<ProductInterface[]> => {
   }
 };
 
-// Update product
+/**
+ * Updates an existing product with the provided data.
+ *
+ * @param {ProductInterface} productData - The data of the product to update. Must include the product's `_id`.
+ * @param {string} token - The authentication token for the request.
+ * @returns {Promise<ProductInterface>} - A promise that resolves to the updated product data.
+ * @throws {Error} - Throws an error if the product ID is missing or if the update request fails.
+ */
 const updateProduct = async (
   productData: ProductInterface,
   token: string
@@ -89,7 +115,14 @@ const updateProduct = async (
   }
 };
 
-// Find product by ID
+/**
+ * Fetches a product by its ID from the API.
+ *
+ * @param productId - The unique identifier of the product to be retrieved.
+ * @param token - The authentication token for the API request.
+ * @returns A promise that resolves to the product data.
+ * @throws Will throw an error if the request fails, with a message indicating the failure reason.
+ */
 const lookupProductById = async (
   productId: string,
   token: string
@@ -109,7 +142,14 @@ const lookupProductById = async (
   }
 };
 
-// Lookup product by name (partial, case-insensitive match)
+/**
+ * Asynchronously looks up products by their name.
+ *
+ * @param {string} name - The name of the product to search for.
+ * @param {string} token - The authentication token for the request.
+ * @returns {Promise<ProductInterface[]>} A promise that resolves to an array of products matching the given name.
+ * @throws Will throw an error if the request fails, with a message indicating the failure reason.
+ */
 const lookupProductByName = async (
   name: string,
   token: string
@@ -130,7 +170,14 @@ const lookupProductByName = async (
   }
 };
 
-// Delete product by ID
+/**
+ * Deletes a product by its ID.
+ *
+ * @param productId - The ID of the product to delete.
+ * @param token - The authentication token for the request.
+ * @returns A promise that resolves when the product is deleted.
+ * @throws Will throw an error if the deletion fails.
+ */
 const deleteProduct = async (
   productId: string,
   token: string
