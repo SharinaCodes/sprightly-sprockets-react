@@ -15,6 +15,77 @@ import PrivateRoute from "./components/PrivateRoute";
 import Reports from "./pages/Reports/Reports";
 import NotFoundComponent from "./components/NotFound"; // Import your NotFoundComponent
 
+/**
+ * Main application component that handles routing and layout.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <App />
+ * )
+ * 
+ * @returns {JSX.Element} The main application component with routing.
+ * 
+ * @description
+ * The `App` component defines the structure and routing of the application using React Router. It includes public routes for login, registration, and private routes for parts and product management. It also includes a `NotFoundComponent` for handling invalid URLs.
+ * 
+ * @function
+ * @name App
+ * 
+ * @remarks
+ * - Utilizes `PrivateRoute` to protect certain routes for authenticated users only.
+ * - Includes a catch-all route (`*`) to render a 404 page for invalid URLs.
+ * 
+ * @hook
+ * @name Router
+ * Provides routing functionality across the application.
+ * 
+ * @hook
+ * @name Routes
+ * Defines the various routes and their corresponding components.
+ * 
+ * @hook
+ * @name Route
+ * Sets up individual routes such as login, registration, adding/editing parts and products, and viewing reports.
+ * 
+ * @hook
+ * @name ToastContainer
+ * Displays toast notifications across the application.
+ * 
+ * @function
+ * @name Header
+ * Renders the application's header.
+ * 
+ * @route /
+ * Displays the home page (`<Home />` component).
+ * 
+ * @route /login
+ * Displays the login page (`<Login />` component).
+ * 
+ * @route /register
+ * Displays the registration page (`<Register />` component).
+ * 
+ * @route /add-part
+ * Protected route that displays the add part form (`<AddPart />` component) under the `PrivateRoute`.
+ * 
+ * @route /edit-part/:partId
+ * Protected route that displays the edit part form (`<EditPart />` component) under the `PrivateRoute`.
+ * 
+ * @route /products
+ * Protected route that displays the products page (`<Products />` component) under the `PrivateRoute`.
+ * 
+ * @route /add-product
+ * Protected route that displays the add product form (`<AddProduct />` component) under the `PrivateRoute`.
+ * 
+ * @route /edit-product/:productId
+ * Protected route that displays the edit product form (`<EditProduct />` component) under the `PrivateRoute`.
+ * 
+ * @route /reports
+ * Protected route that displays the reports page (`<Reports />` component) under the `PrivateRoute`.
+ * 
+ * @route *
+ * Displays the 404 page (`<NotFoundComponent />`) for any invalid URLs.
+ */
 const App: React.FC = () => {
   return (
     <>

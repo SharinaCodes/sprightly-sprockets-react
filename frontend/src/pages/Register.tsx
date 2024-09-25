@@ -10,6 +10,86 @@ import { RootState, AppDispatch } from '../app/store';
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
+/**
+ * Component for user registration.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <Register />
+ * )
+ * 
+ * @returns {JSX.Element} The rendered component.
+ * 
+ * @remarks
+ * This component allows users to register for a new account by filling out their details such as first name, last name, email, and password. It handles form input changes, form validation, and form submission. Upon successful registration, the user is redirected to the home page.
+ * 
+ * @function
+ * @name Register
+ * 
+ * @description
+ * The `Register` component manages the registration form state, handles form input changes, validates the email and password fields, checks if the passwords match, and dispatches an action to register the user. It also interacts with the Redux store to handle the registration process and check the registration status.
+ * 
+ * @typedef {Object} FormData
+ * @property {string} firstName - The first name of the user.
+ * @property {string} lastName - The last name of the user.
+ * @property {string} email - The email address of the user.
+ * @property {string} password - The password of the user.
+ * @property {string} password2 - The confirmation password of the user.
+ * 
+ * @hook
+ * @name useSelector
+ * @description
+ * Selects the authentication state, loading status, error messages, and success status from the Redux store.
+ * 
+ * @hook
+ * @name useDispatch
+ * @description
+ * Provides dispatch functionality for Redux actions, such as registering a user.
+ * 
+ * @hook
+ * @name useState
+ * @description
+ * Manages the state for the registration form, including first name, last name, email, password, and password confirmation fields.
+ * 
+ * @hook
+ * @name useNavigate
+ * @description
+ * Provides navigation functionality after successful registration.
+ * 
+ * @hook
+ * @name useEffect
+ * @description
+ * - Displays error or success messages using the `toast` library.
+ * - Resets the authentication state after registration.
+ * - Navigates the user to the home page upon successful registration.
+ * 
+ * @function
+ * @name onChange
+ * @description
+ * Handles input changes in the registration form and updates the component's state accordingly.
+ * 
+ * @function
+ * @name onSubmit
+ * @description
+ * Handles form submission for registering a new user. It validates the email format, checks the password strength, ensures that both passwords match, and dispatches the `registerUser` action.
+ * 
+ * @function
+ * @name Spinner
+ * @description
+ * Displays a loading spinner while the registration request is being processed.
+ * 
+ * @constant {RegExp} emailRegex
+ * @description
+ * Regular expression for validating the email format.
+ * 
+ * @constant {RegExp} passwordRegex
+ * @description
+ * Regular expression for validating the password format (e.g., at least 8 characters, contains letters, numbers, and special characters).
+ * 
+ * @returns {JSX.Element} The rendered form or a loading spinner while the registration request is in progress.
+ */
+
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
     firstName: '',
